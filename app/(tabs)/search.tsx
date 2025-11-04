@@ -1,5 +1,6 @@
 import type { Product } from '@/types/product';
 import { Raleway_500Medium, useFonts } from '@expo-google-fonts/raleway';
+import { Image } from 'expo-image';
 import { ChevronDown, MapPin, Search as SearchIcon } from 'lucide-react-native';
 import React, { useMemo } from 'react';
 import { Dimensions, FlatList, StyleSheet, Text, TextInput, View } from 'react-native';
@@ -93,7 +94,17 @@ function Chip({ label }: { label: string }) {
 function ProductCard({ item, width }: { item: Product; width: number }) {
   return (
     <View style={[styles.card, { width }]}> 
-      <View style={styles.imagePlaceholder} />
+      {item.imageUrl ? (
+        <Image
+          source={{ uri: item.imageUrl }}
+          style={styles.image}
+          contentFit="cover"
+          cachePolicy="disk"
+          transition={200}
+        />
+      ) : (
+        <View style={styles.imagePlaceholder} />
+      )}
       <Text style={styles.brand}>{item.brand}</Text>
       <Text style={styles.title}>{item.title}</Text>
     </View>
@@ -197,6 +208,13 @@ const styles = StyleSheet.create({
     height: 160,
     borderRadius: 12,
     backgroundColor: '#EEEEEE',
+  },
+  image: {
+    width: '100%',
+    height: 160,
+    borderRadius: 12,
+    overflow: 'hidden',
+    backgroundColor: '#F6F6F6',
   },
   brand: {
     marginTop: 8,

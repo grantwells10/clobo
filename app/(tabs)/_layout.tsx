@@ -18,6 +18,13 @@ export default function TabLayout() {
         tabBarButton: HapticTab,
       }}>
       <Tabs.Screen
+        name="index"
+        options={{
+          // hide the index redirect route from the tab bar
+          href: null,
+        }}
+      />
+      <Tabs.Screen
         name="search"
         options={{
           title: 'Search',
