@@ -1,0 +1,102 @@
+[
+  {
+    "id": "zara-midi-dress",
+    "brand": "Zara",
+    "title": "Midi Dress",
+    "category": "Dresses",
+    "material": "Cotton Blend",
+    "color": "Black",
+    "occasion": "Casual",
+    "distanceKm": 3.2,
+    "imageUrl": ""
+  },
+  {
+    "id": "hm-denim-jacket",
+    "brand": "H&M",
+    "title": "Denim Jacket",
+    "category": "Outerwear",
+    "material": "Denim",
+    "color": "Blue",
+    "occasion": "Everyday",
+    "distanceKm": 4.8,
+    "imageUrl": ""
+  },
+  {
+    "id": "vintage-knit-sweater",
+    "brand": "Vintage",
+    "title": "Knit Sweater",
+    "category": "Knitwear",
+    "material": "Wool",
+    "color": "Cream",
+    "occasion": "Casual",
+    "distanceKm": 1.4,
+    "imageUrl": ""
+  },
+  {
+    "id": "levis-high-waist-jeans",
+    "brand": "Levi's",
+    "title": "High-Waist Jeans",
+    "category": "Jeans",
+    "material": "Denim",
+    "color": "Light Blue",
+    "occasion": "Casual",
+    "distanceKm": 2.5,
+    "imageUrl": ""
+  },
+  {
+    "id": "mango-silk-blouse",
+    "brand": "Mango",
+    "title": "Silk Blouse",
+    "category": "Tops",
+    "material": "Silk",
+    "color": "Navy",
+    "occasion": "Work",
+    "distanceKm": 6.0,
+    "imageUrl": ""
+  },
+  {
+    "id": "drmartens-leather-boots",
+    "brand": "Dr. Martens",
+    "title": "Leather Boots",
+    "category": "Shoes",
+    "material": "Leather",
+    "color": "Black",
+    "occasion": "Casual",
+    "distanceKm": 9.1,
+    "imageUrl": ""
+  },
+  {
+    "id": "floral-day-dress",
+    "brand": "Zara",
+    "title": "Floral Day Dress",
+    "category": "Dresses",
+    "material": "Viscose",
+    "color": "Ivory",
+    "occasion": "Occasion",
+    "distanceKm": 7.3,
+    "imageUrl": ""
+  },
+  {
+    "id": "puffer-jacket",
+    "brand": "Mango",
+    "title": "Puffer Jacket",
+    "category": "Outerwear",
+    "material": "Polyester",
+    "color": "Beige",
+    "occasion": "Outdoor",
+    "distanceKm": 8.6,
+    "imageUrl": ""
+  },
+  {
+    "id": "ribbed-turtleneck",
+    "brand": "COS",
+    "title": "Ribbed Turtleneck",
+    "category": "Knitwear",
+    "material": "Merino",
+    "color": "Gray",
+    "occasion": "Work",
+    "distanceKm": 2.0,
+    "imageUrl": ""
+  }
+]
+
