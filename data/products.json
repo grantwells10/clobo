@@ -19,18 +19,18 @@
     "color": "Blue",
     "occasion": "Everyday",
     "distanceKm": 4.8,
-    "imageUrl": ""
+    "imageUrl": "https://image.hm.com/assets/hm/ac/fd/acfde23566dde0ea4c2c0d08dcfaf7e258b58bd1.jpg?imwidth=786"
   },
   {
     "id": "vintage-knit-sweater",
-    "brand": "Vintage",
+    "brand": "Zadig & Voltaire",
     "title": "Knit Sweater",
     "category": "Knitwear",
     "material": "Wool",
     "color": "Cream",
     "occasion": "Casual",
     "distanceKm": 1.4,
-    "imageUrl": ""
+    "imageUrl": "https://images.bloomingdalesassets.com/is/image/BLM/products/9/optimized/13386779_fpx.tif"
   },
   {
     "id": "levis-high-waist-jeans",
@@ -41,7 +41,7 @@
     "color": "Light Blue",
     "occasion": "Casual",
     "distanceKm": 2.5,
-    "imageUrl": ""
+    "imageUrl": "https://lsco.scene7.com/is/image/lsco/188830182-back-pdp?fmt=jpeg&qlt=70&resMode=sharp2&fit=crop,1&op_usm=0.6,0.6,8&wid=2000&hei=2500"
   },
   {
     "id": "mango-silk-blouse",
@@ -52,7 +52,7 @@
     "color": "Navy",
     "occasion": "Work",
     "distanceKm": 6.0,
-    "imageUrl": ""
+    "imageUrl": "https://www.mangooutlet.com/assets/rcs/pics/static/T5/fotos/S/57095985_02_B.jpg?imwidth=2048&imdensity=1&ts=1690824968022"
   },
   {
     "id": "drmartens-leather-boots",
@@ -63,7 +63,7 @@
     "color": "Black",
     "occasion": "Casual",
     "distanceKm": 9.1,
-    "imageUrl": ""
+    "imageUrl": "https://cdn.media.amplience.net/i/drmartens/15265001.80?$smart576$&fmt=auto"
   },
   {
     "id": "floral-day-dress",
@@ -74,7 +74,7 @@
     "color": "Ivory",
     "occasion": "Occasion",
     "distanceKm": 7.3,
-    "imageUrl": ""
+    "imageUrl": "https://static.zara.net/assets/public/6854/f3bb/7c134a7f9dca/718a1a2cd5bb/08511050330-p/08511050330-p.jpg?ts=1753892146885&w=744&f=auto"
   },
   {
     "id": "puffer-jacket",
@@ -85,7 +85,7 @@
     "color": "Beige",
     "occasion": "Outdoor",
     "distanceKm": 8.6,
-    "imageUrl": ""
+    "imageUrl": "https://www.mangooutlet.com/assets/rcs/pics/static/T5/fotos/S/57074395_PL.jpg?imwidth=2048&imdensity=1&ts=1691141782831"
   },
   {
     "id": "ribbed-turtleneck",
@@ -96,7 +96,7 @@
     "color": "Gray",
     "occasion": "Work",
     "distanceKm": 2.0,
-    "imageUrl": ""
+    "imageUrl": "https://media.cos.com/assets/001/0e/3b/0e3b5e9b5fcda48d035d10c8ed79ad30300a6255_xxl-1.jpg?imwidth=2160"
   }
 ]
 
