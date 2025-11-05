@@ -2,7 +2,7 @@ import type { Product } from '@/types/product';
 import { Raleway_500Medium, useFonts } from '@expo-google-fonts/raleway';
 import { Image } from 'expo-image';
 import { ChevronDown, MapPin, Search as SearchIcon } from 'lucide-react-native';
-import React, { useMemo } from 'react';
+import React, { useMemo, useState } from 'react';
 import { Dimensions, FlatList, StyleSheet, Text, TextInput, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
@@ -10,7 +10,7 @@ const productsData = require('@/data/products.json') as Product[];
 
 export default function SearchScreen() {
   const [loaded] = useFonts({ Raleway_500Medium });
-  if (!loaded) return null;
+  const [query, setQuery] = useState('');
 
   const contentPadding = 16;
   const gap = 12;
@@ -21,16 +21,29 @@ export default function SearchScreen() {
     return Math.floor((screenWidth - totalHorizontal) / numColumns);
   }, [contentPadding, gap, numColumns]);
 
+  const filteredData = useMemo(() => {
+    const q = query.trim().toLowerCase();
+    if (!q) return productsData;
+    return productsData.filter((p) => {
+      const title = (p.title ?? '').toLowerCase();
+      const brand = (p.brand ?? '').toLowerCase();
+      return title.includes(q) || brand.includes(q);
+    });
+  }, [query]);
+
+  if (!loaded) return null;
+
   return (
     // specifying top removes the annoying bottom padding above navbar
     <SafeAreaView style={styles.screen} edges={['top']}>
       <FlatList
-        data={productsData}
+        data={filteredData}
         keyExtractor={(item: Product) => item.id}
         numColumns={numColumns}
         contentContainerStyle={{ paddingHorizontal: contentPadding, paddingBottom: 8 }}
         columnWrapperStyle={{ gap }}
-        ListHeaderComponent={<SearchHeader />}
+        ListHeaderComponent={<SearchHeader query={query} setQuery={setQuery} />}
+        ListEmptyComponent={<EmptyResults query={query} />}
         renderItem={({ item }) => (
           <ProductCard item={item} width={cardWidth} />
         )}
@@ -40,7 +53,7 @@ export default function SearchScreen() {
   );
 }
 
-function SearchHeader() {
+function SearchHeader({ query, setQuery }: { query: string; setQuery: (q: string) => void }) {
   return (
     <View style={styles.headerContainer}>
       <Text style={styles.headerTitle}>Search</Text>
@@ -52,6 +65,11 @@ function SearchHeader() {
             placeholder="Search clothing, brand, or keyword"
             placeholderTextColor="#687076"
             style={styles.searchInput}
+            value={query}
+            onChangeText={setQuery}
+            autoCapitalize="none"
+            autoCorrect={false}
+            returnKeyType="search"
           />
         </View>
         <View style={styles.locButton}>
@@ -79,6 +97,15 @@ function SearchHeader() {
           <SlidersHorizontal color="#11181C" size={16} />
         </View> */}
       </View>
+    </View>
+  );
+}
+
+function EmptyResults({ query }: { query: string }) {
+  if (!query) return null;
+  return (
+    <View style={{ paddingVertical: 24 }}>
+      <Text style={{ textAlign: 'center', color: '#687076' }}>No results for “{query}”.</Text>
     </View>
   );
 }
