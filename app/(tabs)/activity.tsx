@@ -1,8 +1,9 @@
 import { Raleway_500Medium, useFonts } from '@expo-google-fonts/raleway';
+import React from 'react';
 import { StyleSheet, Text } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-export default function ProfileScreen() {
+export default function ActivityScreen() {
   const [loaded] = useFonts({ Raleway_500Medium });
   if (!loaded) return null;
 
