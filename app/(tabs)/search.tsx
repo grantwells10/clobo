@@ -1,6 +1,7 @@
 import type { Product } from '@/types/product';
 import { Raleway_500Medium, useFonts } from '@expo-google-fonts/raleway';
 import { Image } from 'expo-image';
+import { useRouter } from 'expo-router';
 import { Check, ChevronDown, MapPin, Search as SearchIcon } from 'lucide-react-native';
 import React, { useMemo, useState } from 'react';
 import { Dimensions, FlatList, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
@@ -224,8 +225,12 @@ function DropdownItem({ label, selected, onPress }: { label: string; selected: b
 }
 
 function ProductCard({ item, width }: { item: Product; width: number }) {
+  const router = useRouter();
   return (
-    <View style={[styles.card, { width }]}> 
+    <Pressable
+      style={[styles.card, { width }]}
+      onPress={() => router.push({ pathname: '/product/[id]', params: { id: item.id } })}
+    >
       {item.imageUrl ? (
         <Image
           source={{ uri: item.imageUrl }}
@@ -239,7 +244,7 @@ function ProductCard({ item, width }: { item: Product; width: number }) {
       )}
       <Text style={styles.brand}>{item.brand}</Text>
       <Text style={styles.title}>{item.title}</Text>
-    </View>
+    </Pressable>
   );
 }
 
