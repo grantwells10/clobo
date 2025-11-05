@@ -20,3 +20,8 @@ export interface Profile {
     stats: ProfileStats;
     listings: Listing[];
   }  
+
+export interface SelectedImage {
+    uri: string;
+    name: string;
+  }
