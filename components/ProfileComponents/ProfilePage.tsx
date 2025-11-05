@@ -1,22 +1,23 @@
-import { Listing, Profile, ProfileStats } from '@/types/profile';
+import type { Listing, Profile, ProfileStats } from '@/types/profile';
+import { Image } from 'expo-image';
 import { FC } from 'react';
-import { FlatList, Image, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { FlatList, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 
 const Header: FC = () => (
   <View style={styles.header}>
     <Text style={styles.headerTitle}>My Profile</Text>
-    <TouchableOpacity style={styles.settingsButton}>
+    <Pressable style={styles.settingsButton}>
       <Text style={styles.settingsIcon}>⚙️</Text>
-    </TouchableOpacity>
+    </Pressable>
   </View>
 );
 
 const Bio: FC<{ text: string }> = ({ text }) => (
-  <Text style={styles.bio}>{text}</Text>
+  <Text style={styles.body}>{text}</Text>
 );
 
 const Stat: FC<{ label: string; value: number }> = ({ label, value }) => (
-  <View style={styles.stat}>
+  <View style={styles.statContainer}>
     <Text style={styles.statValue}>{value}</Text>
     <Text style={styles.statLabel}>{label}</Text>
   </View>
@@ -34,34 +35,46 @@ const ProfileInfo: FC<Omit<Profile, 'listings'>> = ({
   name, 
   location, 
   avatarUrl, 
-  stats 
+  stats,
+  bio 
 }) => (
-  <View style={styles.profileInfo}>
-    <Image source={{ uri: avatarUrl }} style={styles.avatar} />
-    <Text style={styles.name}>{name}</Text>
+  <View style={styles.profileContainer}>
+    {avatarUrl ? (
+      <Image source={avatarUrl} style={styles.avatar} contentFit="cover" />
+    ) : (
+      <View style={[styles.avatar, { backgroundColor: '#EEE' }]} />
+    )}
+    <Text style={styles.title}>{name}</Text>
     <Text style={styles.location}>{location}</Text>
+    
     <StatsRow stats={stats} />
+    
+    <Bio text={bio} />
   </View>
 );
 
 const ListingsGrid: FC<{ listings: Listing[] }> = ({ listings }) => (
-  <FlatList
-    data={listings}
-    numColumns={3}
-    keyExtractor={(item) => item.id}
-    renderItem={({ item }) => (
-      <Image 
-        source={{ uri: item.imageUrl }} 
-        style={styles.gridImage}
-        resizeMode="cover"
-      />
-    )}
-    contentContainerStyle={styles.listingsGrid}
-  />
+  <View style={styles.listingsSection}>
+    <Text style={styles.sectionTitle}>My Listings</Text>
+    <FlatList
+      data={listings}
+      numColumns={3}
+      keyExtractor={(item) => item.id}
+      renderItem={({ item }) => (
+        <Image 
+          source={item.imageUrl}
+          style={styles.gridImage}
+          contentFit="cover"
+        />
+      )}
+      contentContainerStyle={styles.listingsGrid}
+      scrollEnabled={false}
+    />
+  </View>
 );
 
 export const ProfilePage: FC<{ profile: Profile }> = ({ profile }) => (
-  <ScrollView style={styles.container}>
+  <ScrollView style={styles.container} contentContainerStyle={{ paddingBottom: 24 }}>
     <Header />
     <ProfileInfo 
       name={profile.name}
@@ -70,7 +83,6 @@ export const ProfilePage: FC<{ profile: Profile }> = ({ profile }) => (
       bio={profile.bio}
       stats={profile.stats}
     />
-    <Bio text={profile.bio} />
     <ListingsGrid listings={profile.listings} />
   </ScrollView>
 );
@@ -78,18 +90,19 @@ export const ProfilePage: FC<{ profile: Profile }> = ({ profile }) => (
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
+    backgroundColor: '#ffffff',
   },
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingHorizontal: 20,
-    paddingVertical: 16,
+    paddingHorizontal: 16,
+    paddingVertical: 12,
   },
   headerTitle: {
-    fontSize: 24,
-    fontWeight: 'bold',
+    fontSize: 20,
+    fontWeight: '600',
+    color: '#11181C',
   },
   settingsButton: {
     padding: 8,
@@ -97,58 +110,80 @@ const styles = StyleSheet.create({
   settingsIcon: {
     fontSize: 24,
   },
-  profileInfo: {
+  profileContainer: {
     alignItems: 'center',
-    paddingVertical: 20,
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    backgroundColor: '#ffffff',
   },
   avatar: {
-    width: 120,
-    height: 120,
-    borderRadius: 60,
-    marginBottom: 12,
+    width: 140,
+    height: 140,
+    borderRadius: 70,
+    marginBottom: 16,
+    backgroundColor: '#EEE',
   },
-  name: {
-    fontSize: 28,
-    fontWeight: 'bold',
+  title: {
+    fontSize: 32,
+    fontWeight: '700',
+    color: '#11181C',
     marginBottom: 4,
+    textAlign: 'center',
   },
   location: {
     fontSize: 16,
-    color: '#666',
-    marginBottom: 20,
+    color: '#999',
+    marginBottom: 24,
+    textAlign: 'center',
+    fontWeight: '500',
   },
   statsRow: {
     flexDirection: 'row',
     justifyContent: 'space-around',
     width: '100%',
-    paddingHorizontal: 20,
+    marginBottom: 24,
+    paddingHorizontal: 0,
   },
-  stat: {
+  statContainer: {
     alignItems: 'center',
+    flex: 1,
   },
   statValue: {
-    fontSize: 20,
-    fontWeight: 'bold',
+    fontSize: 24,
+    fontWeight: '700',
+    color: '#11181C',
+    marginBottom: 4,
   },
   statLabel: {
-    fontSize: 14,
-    color: '#666',
+    fontSize: 13,
+    color: '#999',
+    fontWeight: '500',
     textTransform: 'capitalize',
   },
-  bio: {
+  body: {
     fontSize: 14,
     textAlign: 'center',
-    paddingHorizontal: 20,
-    paddingVertical: 16,
-    color: '#333',
+    color: '#666',
+    lineHeight: 20,
+    paddingHorizontal: 0,
+  },
+  listingsSection: {
+    paddingHorizontal: 16,
+    paddingTop: 24,
+  },
+  sectionTitle: {
+    fontSize: 22,
+    fontWeight: '700',
+    color: '#11181C',
+    marginBottom: 16,
   },
   listingsGrid: {
-    paddingHorizontal: 4,
+    gap: 8,
   },
   gridImage: {
     flex: 1,
     aspectRatio: 1,
-    margin: 4,
+    borderRadius: 8,
   },
 });
 
