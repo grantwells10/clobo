@@ -2,7 +2,7 @@ import type { Listing, Profile, ProfileStats } from '@/types/profile';
 import { Image } from 'expo-image';
 import * as ImagePicker from 'expo-image-picker';
 import { FC, useState } from 'react';
-import { Alert, Dimensions, FlatList, Modal, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
+import { Alert, Dimensions, FlatList, Modal, Pressable, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 const screenWidth = Dimensions.get('window').width;
@@ -226,20 +226,28 @@ const Stat: FC<{ label: string; value: number }> = ({ label, value }) => (
   </View>
 );
 
-const StatsRow: FC<{ stats: ProfileStats }> = ({ stats }) => (
-  <View style={styles.statsRow}>
-    {Object.entries(stats).map(([key, value]) => (
-      <Stat key={key} label={key} value={value} />
-    ))}
-  </View>
-);
+const StatsRow: FC<{ stats: ProfileStats; onFriendsPress?: () => void }> = ({ stats, onFriendsPress }) => {
+  const entries = Object.entries(stats).filter(([key]) => key !== 'friends');
+  return (
+    <View style={styles.statsRow}>
+      {entries.map(([key, value]) => (
+        <Stat key={key} label={key} value={value as number} />
+      ))}
+      <TouchableOpacity style={styles.statContainer} onPress={onFriendsPress}>
+        <Text style={styles.statValue}>{stats.friends}</Text>
+        <Text style={styles.statLabel}>Friends</Text>
+      </TouchableOpacity>
+    </View>
+  );
+};
 
-const ProfileInfo: FC<Omit<Profile, 'listings'>> = ({ 
+const ProfileInfo: FC<any> = ({ 
   name, 
   location, 
   avatarUrl, 
   stats,
-  bio 
+  bio,
+  onFriendsPress,
 }) => (
   <View style={styles.profileContainer}>
     {avatarUrl ? (
@@ -250,7 +258,7 @@ const ProfileInfo: FC<Omit<Profile, 'listings'>> = ({
     <Text style={styles.title}>{name}</Text>
     <Text style={styles.location}>{location}</Text>
     
-    <StatsRow stats={stats} />
+    <StatsRow stats={stats} onFriendsPress={onFriendsPress} />
     
     <Bio text={bio} />
   </View>
@@ -276,7 +284,8 @@ const ListingsGrid: FC<{ listings: Listing[] }> = ({ listings }) => (
   </View>
 );
 
-export const ProfilePage: FC<{ profile: Profile }> = ({ profile }) => {
+export function ProfilePage(props: any) {
+  const { profile, onFriendsPress } = props;
     const [modalVisible, setModalVisible] = useState(false);
     const insets = useSafeAreaInsets();
   
@@ -293,6 +302,7 @@ export const ProfilePage: FC<{ profile: Profile }> = ({ profile }) => {
             avatarUrl={profile.avatarUrl}
             bio={profile.bio}
             stats={profile.stats}
+            onFriendsPress={onFriendsPress}
           />
           <ListingsGrid listings={profile.listings} />
         </ScrollView>

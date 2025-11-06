@@ -1,0 +1,17 @@
+[
+  { "id": "u1", "name": "Sarah Kim", "avatarUrl": "https://i.pravatar.cc/100?img=12", "phone": "+14155550101", "isFriend": true },
+  { "id": "u2", "name": "Alex Chen", "avatarUrl": "https://i.pravatar.cc/100?img=5", "phone": "+14155550202", "isFriend": true },
+  { "id": "u3", "name": "Maya Patel", "avatarUrl": "https://i.pravatar.cc/100?img=32", "phone": "+14155550303", "isFriend": true },
+  { "id": "u4", "name": "James Liu", "avatarUrl": "https://i.pravatar.cc/100?img=10", "phone": "+14155550404", "isFriend": true },
+  { "id": "u5", "name": "Olivia Brown", "avatarUrl": "https://i.pravatar.cc/100?img=45", "phone": "+14155550505", "isFriend": true },
+  { "id": "u6", "name": "Ethan Wang", "avatarUrl": "https://i.pravatar.cc/100?img=66", "phone": "+19259225501", "isFriend": false },
+  { "id": "u7", "name": "Grant Wells", "avatarUrl": "https://i.pravatar.cc/100?img=30", "phone": "+19251234567", "isFriend": true },
+  { "id": "u8", "name": "Noah Martinez", "avatarUrl": "https://i.pravatar.cc/100?img=31", "phone": "+19251230002", "isFriend": false },
+  { "id": "u9", "name": "Emma Wilson", "avatarUrl": "https://i.pravatar.cc/100?img=32", "phone": "+19251230003", "isFriend": false },
+  { "id": "u10", "name": "Olivia Garcia", "avatarUrl": "https://i.pravatar.cc/100?img=33", "phone": "+19251230004", "isFriend": false },
+  { "id": "u11", "name": "Ava Rodriguez", "avatarUrl": "https://i.pravatar.cc/100?img=34", "phone": "+19251230005", "isFriend": false },
+  { "id": "u12", "name": "Sophia Lee", "avatarUrl": "https://i.pravatar.cc/100?img=35", "phone": "+19251230006", "isFriend": false },
+  { "id": "u13", "name": "William Kim", "avatarUrl": "https://i.pravatar.cc/100?img=36", "phone": "+19251230007", "isFriend": false },
+  { "id": "u14", "name": "James Park", "avatarUrl": "https://i.pravatar.cc/100?img=37", "phone": "+19251230008", "isFriend": false },
+  { "id": "u15", "name": "Mia Chen", "avatarUrl": "https://i.pravatar.cc/100?img=38", "phone": "+19251230009", "isFriend": false }
+]

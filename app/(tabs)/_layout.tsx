@@ -1,6 +1,5 @@
 import { Tabs } from 'expo-router';
 import { Activity, Search, User } from 'lucide-react-native';
-import React from 'react';
 
 import { HapticTab } from '@/components/haptic-tab';
 

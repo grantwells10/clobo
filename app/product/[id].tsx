@@ -6,6 +6,10 @@ import React from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
+export const options = {
+  headerShown: true,
+};
+
 const products = require('@/data/products.json') as Product[];
 
 export default function ProductDetail() {
@@ -27,6 +31,7 @@ export default function ProductDetail() {
 
   return (
     <SafeAreaView style={styles.safe} edges={['bottom']}> 
+      <View style={{ padding: 40 }}></View>
       <ScrollView contentContainerStyle={styles.container}>
         {product.imageUrl ? (
           <Image source={{ uri: product.imageUrl }} style={styles.hero} contentFit="contain" />
