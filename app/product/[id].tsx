@@ -71,9 +71,14 @@ export default function ProductDetail() {
             )}
             <View>
               <Text style={styles.ownerName}>{product.owner?.name || '—'}</Text>
-              {typeof product.owner?.mutualFriends === 'number' ? (
-                <Text style={styles.muted}>{product.owner.mutualFriends} mutual friends</Text>
-              ) : null}
+              <View style={{ gap: 2 }}>
+                {typeof product.owner?.mutualFriends === 'number' ? (
+                  <Text style={styles.muted}>{product.owner.mutualFriends} mutual friends</Text>
+                ) : null}
+                {typeof product.distanceKm === 'number' ? (
+                  <Text style={styles.muted}>{product.distanceKm.toFixed(1)} km away</Text>
+                ) : null}
+              </View>
             </View>
           </View>
           <Pressable style={[styles.button, { marginTop: 16 }]}>
