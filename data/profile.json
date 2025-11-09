@@ -1,0 +1,54 @@
+{
+  "name": "Emma Lin",
+  "location": "San Francisco, CA",
+  "avatarUrl": "../../assets/images/avatar.jpeg",
+  "bio": "Fashion enthusiast 👗 Sustainable living advocate 🌱 Happy to share my closet with friends!",
+  "stats": {
+    "items": 9,
+    "friends": 5,
+    "borrows": 43,
+    "lends": 28
+  },
+  "listings": [
+    {
+      "id": "1",
+      "imageUrl": "../../assets/images/item1.jpeg",
+      "alt": "Blue shirt",
+      "title": "Classic Blue Button-Down Shirt",
+      "brand": "J.Crew",
+      "sizeLabel": "Small (US 4)",
+      "material": "100% Cotton",
+      "color": "Navy Blue",
+      "occasion": "Casual, Work",
+      "description": "Versatile button-down shirt in a classic navy blue. Perfect for layering or wearing on its own. Great condition, only worn a few times.",
+      "washingInstructions": "Machine wash cold on gentle cycle. Tumble dry low or hang to dry. Iron on medium heat if needed."
+    },
+    {
+      "id": "2",
+      "imageUrl": "../../assets/images/item2.jpeg",
+      "alt": "Denim jacket",
+      "title": "Vintage Denim Jacket",
+      "brand": "Levi's",
+      "sizeLabel": "Medium (US 6-8)",
+      "material": "100% Cotton Denim",
+      "color": "Light Blue",
+      "occasion": "Casual, Everyday",
+      "description": "Classic denim jacket with a relaxed fit. Perfect for spring and fall weather. Has that broken-in vintage feel.",
+      "washingInstructions": "Machine wash cold, do not bleach. Tumble dry low or hang to dry. Avoid high heat."
+    },
+    {
+      "id": "3",
+      "imageUrl": "../../assets/images/item3.jpeg",
+      "alt": "White tee",
+      "title": "Essential White T-Shirt",
+      "brand": "Everlane",
+      "sizeLabel": "Small (US 4)",
+      "material": "100% Organic Cotton",
+      "color": "White",
+      "occasion": "Casual, Everyday",
+      "description": "Soft, comfortable white t-shirt made from organic cotton. Perfect basic piece that goes with everything. Minimal wear.",
+      "washingInstructions": "Machine wash cold with like colors. Tumble dry low or hang to dry. May need occasional bleaching to maintain whiteness."
+    }
+  ]
+}
+

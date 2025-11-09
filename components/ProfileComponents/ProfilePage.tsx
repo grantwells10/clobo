@@ -1,8 +1,10 @@
-import type { Listing, Profile, ProfileStats } from '@/types/profile';
+import { Colors, globalStyles } from '@/styles/globalStyles';
+import type { Listing, ProfileStats } from '@/types/profile';
 import { Image } from 'expo-image';
 import * as ImagePicker from 'expo-image-picker';
+import { useRouter } from 'expo-router';
 import { FC, useState } from 'react';
-import { Alert, Dimensions, FlatList, Modal, Pressable, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { Alert, Dimensions, FlatList, Keyboard, Modal, Pressable, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 const screenWidth = Dimensions.get('window').width;
@@ -12,118 +14,91 @@ const PhotoUploadArea: FC<{ onPress: () => void; images: string[] }> = ({ onPres
     return (
       <View>
         {images && images.length > 0 ? (
-          <View style={styles.uploadedPhotos}>
-            {images.map((uri, index) => (
-              <View key={index} style={styles.uploadedPhotoContainer}>
-                <Image 
-                  source={{ uri }} 
-                  style={styles.uploadedPhoto}
-                  contentFit="cover"
-                  onLoad={() => console.log(`Image ${index} loaded`)}
-                  onError={(error) => console.log(`Image ${index} error:`, error)}
-                />
-              </View>
-            ))}
+          <View style={styles.uploadedPhotoSingle}>
+            <Image 
+              source={{ uri: images[0] }} 
+              style={styles.uploadedPhotoSmall}
+              contentFit="cover"
+            />
+            <Pressable style={globalStyles.buttonSecondary} onPress={() => onPress()}>
+              <Text style={globalStyles.buttonSecondaryText}>Change Photo</Text>
+            </Pressable>
           </View>
         ) : (
-          <Pressable style={styles.uploadArea} onPress={onPress}>
-            <Text style={styles.uploadIcon}>↑</Text>
-            <Text style={styles.uploadTitle}>Click to upload photos</Text>
-            <Text style={styles.uploadSubtext}>Up to 5 images</Text>
-          </Pressable>
-        )}
-        {images.length > 0 && (
-          <Pressable style={styles.addMoreButton} onPress={onPress}>
-            <Text style={styles.addMoreText}>+ Add More Photos</Text>
+          <Pressable style={globalStyles.uploadArea} onPress={onPress}>
+            <Text style={globalStyles.uploadIcon}>↑</Text>
+            <Text style={globalStyles.uploadTitle}>Click to upload photo</Text>
+            <Text style={globalStyles.uploadSubtext}>1 image</Text>
           </Pressable>
         )}
       </View>
     );
   };
-
-// const PhotoUploadArea: FC<{ onPress: () => void; images: string[] }> = ({ onPress, images }) => (
-//     <View>
-//       {images.length > 0 ? (
-//         <View style={styles.uploadedPhotos}>
-//           {images.map((uri, index) => (
-//             <Image key={index} source={{ uri }} style={styles.uploadedPhoto} />
-//           ))}
-//         </View>
-//       ) : (
-//         <Pressable style={styles.uploadArea} onPress={onPress}>
-//           <Text style={styles.uploadIcon}>↑</Text>
-//           <Text style={styles.uploadTitle}>Click to upload photos</Text>
-//           <Text style={styles.uploadSubtext}>Up to 5 images</Text>
-//         </Pressable>
-//       )}
-//       {images.length > 0 && (
-//         <Pressable style={styles.addMoreButton} onPress={onPress}>
-//           <Text style={styles.addMoreText}>Add More Photos</Text>
-//         </Pressable>
-//       )}
-//     </View>
-// );
   
 const FormInput: FC<{ label: string; placeholder: string; value?: string; onChangeText?: (text: string) => void }> = 
   ({ label, placeholder, value, onChangeText }) => (
-  <View style={styles.formField}>
-    <Text style={styles.formLabel}>{label}</Text>
+  <View style={globalStyles.formField}>
+    <Text style={globalStyles.formLabel}>{label}</Text>
     <TextInput 
-      style={styles.formInput}
+      style={globalStyles.formInput}
       placeholder={placeholder}
-      placeholderTextColor="#999"
+      placeholderTextColor={Colors.textMutedLight}
       value={value}
       onChangeText={onChangeText}
     />
   </View>
 );
 
-const AddListingModal: FC<{ visible: boolean; onClose: () => void }> = ({ visible, onClose }) => {
+const SIZE_OPTIONS = ['XS', 'S', 'M', 'L', 'XL'];
+
+const AddListingModal: FC<{ visible: boolean; onClose: () => void; onAddListing?: (images: string[], listingData: { title: string; brand?: string; sizeLabel?: string; material?: string; color?: string; occasion?: string; description?: string; washingInstructions?: string }) => void }> = ({ visible, onClose, onAddListing }) => {
     const insets = useSafeAreaInsets();
     const [images, setImages] = useState<string[]>([]);
     const [itemName, setItemName] = useState('');
     const [brand, setBrand] = useState('');
+    const [size, setSize] = useState<string>('');
+    const [sizeDropdownOpen, setSizeDropdownOpen] = useState(false);
     const [material, setMaterial] = useState('');
     const [color, setColor] = useState('');
     const [occasion, setOccasion] = useState('');
+    const [description, setDescription] = useState('');
+    const [washingInstructions, setWashingInstructions] = useState('');
 
     const pickImages = async () => {
         const result = await ImagePicker.launchImageLibraryAsync({
           mediaTypes: ImagePicker.MediaTypeOptions.Images,
           quality: 0.8,
+          allowsMultipleSelection: false,
         });
     
         console.log('ImagePicker result:', result);
     
         if (!result.canceled && result.assets && result.assets.length > 0) {
-          const uris = result.assets.map(asset => {
-            console.log('Asset URI:', asset.uri);
-            return asset.uri;
-          });
-          
-          if (images.length + uris.length > 5) {
-            Alert.alert('Limit Reached', 'Maximum 5 images');
-            return;
-          }
-          
-          console.log('Setting images:', uris);
-          setImages([...images, ...uris]);
+          // Only take the first image
+          const uri = result.assets[0].uri;
+          console.log('Setting image:', uri);
+          setImages([uri]);
         } else {
-          console.log('No images selected or canceled');
+          console.log('No image selected or canceled');
         }
     };
 
     const handleClose = () => {
+        Keyboard.dismiss();
         setImages([]);
         setItemName('');
         setBrand('');
+        setSize('');
+        setSizeDropdownOpen(false);
         setMaterial('');
         setColor('');
         setOccasion('');
+        setDescription('');
+        setWashingInstructions('');
         onClose();
     };
 
-    const handleSubmit = () => {
+    const handleSubmit = async () => {
         if (!itemName.trim()) {
           Alert.alert('Error', 'Please enter an item name');
           return;
@@ -133,6 +108,20 @@ const AddListingModal: FC<{ visible: boolean; onClose: () => void }> = ({ visibl
           return;
         }
         
+        // Call the callback to save images locally and add to listings
+        if (onAddListing) {
+          await onAddListing(images, {
+            title: itemName,
+            brand: brand.trim() || undefined,
+            sizeLabel: size || undefined,
+            material: material.trim() || undefined,
+            color: color.trim() || undefined,
+            occasion: occasion.trim() || undefined,
+            description: description.trim() || undefined,
+            washingInstructions: washingInstructions.trim() || undefined,
+          });
+        }
+        
         Alert.alert('Success', `"${itemName}" added to your listings!`);
         handleClose();
     };
@@ -140,24 +129,34 @@ const AddListingModal: FC<{ visible: boolean; onClose: () => void }> = ({ visibl
     return (
         <Modal visible={visible} transparent animationType="fade">
           <Pressable 
-            style={[styles.modalBackdrop, { paddingTop: insets.top }]} 
-            onPress={handleClose}
+            style={[globalStyles.modalBackdrop, { paddingTop: insets.top }]} 
+            onPress={(e) => {
+              if (e.target === e.currentTarget) {
+                Keyboard.dismiss();
+                handleClose();
+              }
+            }}
           >
-            <Pressable style={styles.modalContent}>
-              <View style={styles.modalHeader}>
-                <Text style={styles.modalTitle}>Add New Listing</Text>
+            <Pressable style={globalStyles.modalContent} onPress={(e) => e.stopPropagation()}>
+              <View style={globalStyles.modalHeader}>
+                <Text style={globalStyles.modalTitle}>Add New Listing</Text>
                 <Pressable onPress={handleClose}>
-                  <Text style={styles.closeButton}>✕</Text>
+                  <Text style={globalStyles.closeButton}>✕</Text>
                 </Pressable>
               </View>
               
-              <Text style={styles.modalSubtitle}>Share an item from your closet with friends</Text>
+              <Text style={globalStyles.modalSubtitle}>Share an item from your closet with friends</Text>
               
               <ScrollView 
-                style={styles.modalBody}
+                style={globalStyles.modalBody}
                 contentContainerStyle={{ paddingBottom: insets.bottom + 20 }}
+                keyboardShouldPersistTaps="handled"
+                onScrollBeginDrag={() => {
+                  Keyboard.dismiss();
+                  setSizeDropdownOpen(false);
+                }}
               >
-                <Text style={styles.formLabel}>Photos</Text>
+                <Text style={globalStyles.formLabel}>Photo</Text>
                 <PhotoUploadArea onPress={pickImages} images={images} />
                 
                 <FormInput 
@@ -173,11 +172,44 @@ const AddListingModal: FC<{ visible: boolean; onClose: () => void }> = ({ visibl
                   onChangeText={setBrand}
                 />
                 
-                <View style={styles.formField}>
-                  <Text style={styles.formLabel}>Size</Text>
-                  <Pressable style={styles.selectInput}>
-                    <Text style={{ color: '#999' }}>Select size</Text>
-                  </Pressable>
+                <View style={globalStyles.formField}>
+                  <Text style={globalStyles.formLabel}>Size</Text>
+                  <View style={styles.dropdownContainer}>
+                    <Pressable 
+                      style={globalStyles.selectInput}
+                      onPress={() => {
+                        Keyboard.dismiss();
+                        setSizeDropdownOpen(!sizeDropdownOpen);
+                      }}
+                    >
+                      <Text style={[globalStyles.selectInputText, size ? { color: Colors.text } : { color: Colors.textMutedLight }]}>
+                        {size || 'Select size'}
+                      </Text>
+                    </Pressable>
+                    {sizeDropdownOpen && (
+                      <>
+                        <Pressable 
+                          style={styles.dropdownOverlay}
+                          onPress={() => setSizeDropdownOpen(false)}
+                        />
+                        <View style={globalStyles.dropdown}>
+                          {SIZE_OPTIONS.map((option) => (
+                            <Pressable
+                              key={option}
+                              style={globalStyles.dropdownItem}
+                              onPress={() => {
+                                setSize(option);
+                                setSizeDropdownOpen(false);
+                              }}
+                            >
+                              <Text style={globalStyles.dropdownItemText}>{option}</Text>
+                              {size === option && <Text style={globalStyles.checkmark}>✓</Text>}
+                            </Pressable>
+                          ))}
+                        </View>
+                      </>
+                    )}
+                  </View>
                 </View>
                 
                 <FormInput 
@@ -199,8 +231,36 @@ const AddListingModal: FC<{ visible: boolean; onClose: () => void }> = ({ visibl
                   onChangeText={setOccasion}
                 />
                 
-                <Pressable style={styles.submitButton} onPress={handleSubmit}>
-                  <Text style={styles.submitButtonText}>Add Listing</Text>
+                <View style={globalStyles.formField}>
+                  <Text style={globalStyles.formLabel}>Description</Text>
+                  <TextInput 
+                    style={[globalStyles.formInput, globalStyles.formTextArea]}
+                    placeholder="Describe the item..."
+                    placeholderTextColor={Colors.textMutedLight}
+                    value={description}
+                    onChangeText={setDescription}
+                    multiline
+                    numberOfLines={4}
+                    textAlignVertical="top"
+                  />
+                </View>
+                
+                <View style={globalStyles.formField}>
+                  <Text style={globalStyles.formLabel}>Washing Instructions</Text>
+                  <TextInput 
+                    style={[globalStyles.formInput, globalStyles.formTextArea]}
+                    placeholder="e.g., Machine wash cold, hang to dry"
+                    placeholderTextColor={Colors.textMutedLight}
+                    value={washingInstructions}
+                    onChangeText={setWashingInstructions}
+                    multiline
+                    numberOfLines={3}
+                    textAlignVertical="top"
+                  />
+                </View>
+                
+                <Pressable style={[globalStyles.buttonPrimary, { marginTop: 20, marginBottom: 16 }]} onPress={handleSubmit}>
+                  <Text style={globalStyles.buttonPrimaryText}>Add Listing</Text>
                 </Pressable>
               </ScrollView>
             </Pressable>
@@ -210,32 +270,32 @@ const AddListingModal: FC<{ visible: boolean; onClose: () => void }> = ({ visibl
 };
 
 const Header: FC = () => (
-  <View style={styles.header}>
-    <Text style={styles.headerTitle}>My Profile</Text>
+  <View style={globalStyles.profileHeader}>
+    <Text style={globalStyles.profileHeaderTitle}>My Profile</Text>
   </View>
 );
 
 const Bio: FC<{ text: string }> = ({ text }) => (
-  <Text style={styles.body}>{text}</Text>
+  <Text style={globalStyles.bodyCentered}>{text}</Text>
 );
 
 const Stat: FC<{ label: string; value: number }> = ({ label, value }) => (
-  <View style={styles.statContainer}>
-    <Text style={styles.statValue}>{value}</Text>
-    <Text style={styles.statLabel}>{label}</Text>
+  <View style={globalStyles.statContainer}>
+    <Text style={globalStyles.statValue}>{value}</Text>
+    <Text style={globalStyles.statLabel}>{label}</Text>
   </View>
 );
 
 const StatsRow: FC<{ stats: ProfileStats; onFriendsPress?: () => void }> = ({ stats, onFriendsPress }) => {
   const entries = Object.entries(stats).filter(([key]) => key !== 'friends');
   return (
-    <View style={styles.statsRow}>
+    <View style={globalStyles.statsRow}>
       {entries.map(([key, value]) => (
         <Stat key={key} label={key} value={value as number} />
       ))}
-      <TouchableOpacity style={styles.statContainer} onPress={onFriendsPress}>
-        <Text style={styles.statValue}>{stats.friends}</Text>
-        <Text style={styles.statLabel}>Friends</Text>
+      <TouchableOpacity style={globalStyles.statContainer} onPress={onFriendsPress}>
+        <Text style={globalStyles.statValue}>{stats.friends}</Text>
+        <Text style={globalStyles.statLabel}>Friends</Text>
       </TouchableOpacity>
     </View>
   );
@@ -249,14 +309,14 @@ const ProfileInfo: FC<any> = ({
   bio,
   onFriendsPress,
 }) => (
-  <View style={styles.profileContainer}>
+  <View style={globalStyles.profileContainer}>
     {avatarUrl ? (
-      <Image source={avatarUrl} style={styles.avatar} contentFit="cover" />
+      <Image source={avatarUrl} style={globalStyles.avatarLarge} contentFit="cover" />
     ) : (
-      <View style={[styles.avatar, { backgroundColor: '#EEE' }]} />
+      <View style={[globalStyles.avatarLarge, { backgroundColor: Colors.placeholder }]} />
     )}
-    <Text style={styles.title}>{name}</Text>
-    <Text style={styles.location}>{location}</Text>
+    <Text style={globalStyles.titleLarge}>{name}</Text>
+    <Text style={globalStyles.locationText}>{location}</Text>
     
     <StatsRow stats={stats} onFriendsPress={onFriendsPress} />
     
@@ -264,28 +324,44 @@ const ProfileInfo: FC<any> = ({
   </View>
 );
 
-const ListingsGrid: FC<{ listings: Listing[] }> = ({ listings }) => (
-  <View style={styles.listingsSection}>
-    <Text style={styles.sectionTitle}>My Listings</Text>
-    <FlatList
-      data={listings}
-      numColumns={3}
-      keyExtractor={(item) => item.id}
-      renderItem={({ item }) => (
-        <Image 
-          source={item.imageUrl}
-          style={styles.gridImage}
-          contentFit="cover"
-        />
-      )}
-      contentContainerStyle={styles.listingsGrid}
-      scrollEnabled={false}
-    />
-  </View>
-);
+const ListingsGrid: FC<{ listings: Listing[] }> = ({ listings }) => {
+  const router = useRouter();
+  const contentPadding = 16;
+  const gap = 8;
+  const numColumns = 3;
+  const imageWidth = Math.floor((Dimensions.get('window').width - (contentPadding * 2) - (gap * (numColumns - 1))) / numColumns);
+
+  return (
+    <View style={globalStyles.listingsSection}>
+      <Text style={globalStyles.sectionTitleLarge}>My Listings</Text>
+      <FlatList
+        data={listings}
+        numColumns={numColumns}
+        keyExtractor={(item) => item.id}
+        renderItem={({ item }) => (
+          <Pressable
+            onPress={() => router.push({ 
+              pathname: '/product/[id]', 
+              params: { id: item.id, isOwnListing: 'true' } 
+            })}
+          >
+            <Image 
+              source={item.imageUrl}
+              style={[globalStyles.gridImage, { width: imageWidth }]}
+              contentFit="cover"
+            />
+          </Pressable>
+        )}
+        contentContainerStyle={globalStyles.listingsGrid}
+        columnWrapperStyle={{ gap }}
+        scrollEnabled={false}
+      />
+    </View>
+  );
+};
 
 export function ProfilePage(props: any) {
-  const { profile, onFriendsPress } = props;
+  const { profile, onFriendsPress, onAddListing } = props;
     const [modalVisible, setModalVisible] = useState(false);
     const insets = useSafeAreaInsets();
   
@@ -309,7 +385,7 @@ export function ProfilePage(props: any) {
         
         <Pressable 
           style={[
-            styles.fab,
+            globalStyles.fab,
             { 
               bottom: 24 + insets.bottom,
               right: 24 + insets.right,
@@ -317,260 +393,41 @@ export function ProfilePage(props: any) {
           ]}
           onPress={() => setModalVisible(true)}
         >
-          <Text style={styles.fabText}>+</Text>
+          <Text style={globalStyles.fabText}>+</Text>
         </Pressable>
   
-        <AddListingModal visible={modalVisible} onClose={() => setModalVisible(false)} />
+        <AddListingModal 
+          visible={modalVisible} 
+          onClose={() => setModalVisible(false)} 
+          onAddListing={onAddListing}
+        />
       </>
     );
   };
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#ffffff',
+  container: globalStyles.container,
+  dropdownContainer: {
+    position: 'relative',
+    zIndex: 100,
   },
-  header: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingHorizontal: 16,
-    paddingVertical: 12,
-  },
-  headerTitle: {
-    fontSize: 20,
-    fontWeight: '600',
-    color: '#11181C',
-  },
-  profileContainer: {
-    alignItems: 'center',
-    paddingHorizontal: 16,
-    paddingVertical: 12,
-    backgroundColor: '#ffffff',
-  },
-  avatar: {
-    width: 140,
-    height: 140,
-    borderRadius: 70,
-    marginBottom: 16,
-    backgroundColor: '#EEE',
-  },
-  title: {
-    fontSize: 32,
-    fontWeight: '700',
-    color: '#11181C',
-    marginBottom: 4,
-    textAlign: 'center',
-  },
-  location: {
-    fontSize: 16,
-    color: '#999',
-    marginBottom: 24,
-    textAlign: 'center',
-    fontWeight: '500',
-  },
-  statsRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-    width: '100%',
-    marginBottom: 24,
-    paddingHorizontal: 0,
-  },
-  statContainer: {
-    alignItems: 'center',
-    flex: 1,
-  },
-  statValue: {
-    fontSize: 24,
-    fontWeight: '700',
-    color: '#11181C',
-    marginBottom: 4,
-  },
-  statLabel: {
-    fontSize: 13,
-    color: '#999',
-    fontWeight: '500',
-    textTransform: 'capitalize',
-  },
-  body: {
-    fontSize: 14,
-    textAlign: 'center',
-    color: '#666',
-    lineHeight: 20,
-    paddingHorizontal: 0,
-  },
-  listingsSection: {
-    paddingHorizontal: 16,
-    paddingTop: 24,
-  },
-  sectionTitle: {
-    fontSize: 22,
-    fontWeight: '700',
-    color: '#11181C',
-    marginBottom: 16,
-  },
-  listingsGrid: {
-    gap: 8,
-  },
-  gridImage: {
-    flex: 1,
-    aspectRatio: 1,
-    borderRadius: 8,
-  },
-  fab: {
+  dropdownOverlay: {
     position: 'absolute',
-    width: 56,
-    height: 56,
-    borderRadius: 28,
-    backgroundColor: '#DAA520',
-    justifyContent: 'center',
-    alignItems: 'center',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.25,
-    shadowRadius: 4,
-    elevation: 5,
+    top: 0,
+    left: -1000,
+    right: -1000,
+    bottom: -1000,
+    zIndex: 999,
   },
-  fabText: {
-    fontSize: 32,
-    color: '#ffffff',
-    fontWeight: 'bold',
-  },
-  modalBackdrop: {
-    flex: 1,
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  modalContent: {
-    backgroundColor: '#ffffff',
-    borderRadius: 16,
-    width: '85%',
-    maxHeight: '80%',
-    overflow: 'hidden',
-  },
-  modalHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingHorizontal: 20,
-    paddingVertical: 16,
-    borderBottomWidth: 1,
-    borderBottomColor: '#E6E8EB',
-  },
-  modalTitle: {
-    fontSize: 18,
-    fontWeight: '700',
-    color: '#11181C',
-  },
-  closeButton: {
-    fontSize: 24,
-    color: '#687076',
-    fontWeight: '600',
-  },
-  modalSubtitle: {
-    fontSize: 14,
-    color: '#687076',
-    paddingHorizontal: 20,
-    paddingTop: 12,
-  },
-  modalBody: {
-    paddingHorizontal: 20,
-    paddingTop: 16,
-  },
-  uploadArea: {
-    borderWidth: 1,
-    borderStyle: 'dashed',
-    borderColor: '#D0D5DD',
-    borderRadius: 8,
-    paddingVertical: 40,
+  uploadedPhotoSingle: {
     alignItems: 'center',
     marginVertical: 12,
-    backgroundColor: '#FAFBFC',
   },
-  uploadIcon: {
-    fontSize: 32,
-    color: '#687076',
+  uploadedPhotoSmall: {
+    width: 100,
+    height: 100,
+    borderRadius: 8,
     marginBottom: 8,
-  },
-  uploadTitle: {
-    fontSize: 14,
-    fontWeight: '600',
-    color: '#11181C',
-  },
-  uploadSubtext: {
-    fontSize: 12,
-    color: '#687076',
-    marginTop: 4,
-  },
-  uploadedPhotoContainer: {
-    width: '31%',
-    aspectRatio: 1,
-    borderRadius: 8,
-    overflow: 'hidden',
-  },
-  formField: {
-    marginBottom: 16,
-  },
-  formLabel: {
-    fontSize: 14,
-    fontWeight: '600',
-    color: '#11181C',
-    marginBottom: 8,
-  },
-  formInput: {
-    borderWidth: 1,
-    borderColor: '#D0D5DD',
-    borderRadius: 8,
-    paddingHorizontal: 12,
-    paddingVertical: 10,
-    fontSize: 14,
-    color: '#11181C',
-  },
-  selectInput: {
-    borderWidth: 1,
-    borderColor: '#D0D5DD',
-    borderRadius: 8,
-    paddingHorizontal: 12,
-    paddingVertical: 10,
-    justifyContent: 'center',
-  },
-  submitButton: {
-    backgroundColor: '#550000',
-    borderRadius: 8,
-    paddingVertical: 12,
-    alignItems: 'center',
-    marginTop: 20,
-    marginBottom: 16,
-  },
-  submitButtonText: {
-    color: '#ffffff',
-    fontSize: 16,
-    fontWeight: '600',
-  },
-  uploadedPhotos: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: 8,
-    marginVertical: 12,
-  },
-  uploadedPhoto: {
-    width: '31%',
-    aspectRatio: 1,
-    borderRadius: 8,
-  },
-  addMoreButton: {
-    borderWidth: 1,
-    borderColor: '#D0D5DD',
-    borderRadius: 8,
-    paddingVertical: 10,
-    alignItems: 'center',
-    marginTop: 8,
-  },
-  addMoreText: {
-    color: '#11181C',
-    fontSize: 14,
-    fontWeight: '600',
   },
 });
 

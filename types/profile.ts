@@ -8,19 +8,27 @@ export interface ProfileStats {
   
 export interface Listing {
     id: string;
-    imageUrl: string;
+    imageUrl: string | { uri: string } | number; // Support string URI, object URI, or require() number
     alt: string;
+    title?: string;
+    brand?: string;
+    sizeLabel?: string;
+    material?: string;
+    color?: string;
+    occasion?: string;
+    description?: string;
+    washingInstructions?: string;
   }
   
 export interface Profile {
     name: string;
     location: string;
-    avatarUrl: string;
+    avatarUrl: string | { uri: string } | number; // Support string URI, object URI, or require() number
     bio: string;
     stats: ProfileStats;
     listings: Listing[];
   }  
-
+  
 export interface SelectedImage {
     uri: string;
     name: string;
