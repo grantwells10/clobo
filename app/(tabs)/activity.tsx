@@ -26,6 +26,10 @@ export default function ActivityScreen() {
     setItems((prev) => prev.map((it) => it.id === id ? (() => { const copy = { ...it }; delete (copy as any).activity; return copy; })() : it));
   }
 
+  function handleReturn(id: string) {
+    setItems((prev) => prev.map((it) => it.id === id ? (() => { const copy = { ...it }; delete (copy as any).activity; return copy; })() : it));
+  }
+
   if (!loaded) return null;
 
   return (
@@ -49,7 +53,7 @@ export default function ActivityScreen() {
                 <FlatList
                   data={currentBorrowing}
                   keyExtractor={(i) => i.id}
-                  renderItem={({ item }) => <ActivityCard item={item} type="borrow" />}
+                  renderItem={({ item }) => <ActivityCard item={item} type="borrow" onReturn={handleReturn} />}
                 />
               )}
             </Section>
@@ -108,7 +112,7 @@ function Empty({ text }: { text: string }) {
   return <Text style={styles.emptyText}>{text}</Text>;
 }
 
-function ActivityCard({ item, type, onApprove, onDeny }: { item: ActivityItem; type: 'borrow' | 'lend' | 'yourRequest' | 'approveRequest' ; onApprove?: (id: string) => void; onDeny?: (id: string) => void }) {
+function ActivityCard({ item, type, onApprove, onDeny, onReturn }: { item: ActivityItem; type: 'borrow' | 'lend' | 'yourRequest' | 'approveRequest' ; onApprove?: (id: string) => void; onDeny?: (id: string) => void; onReturn?: (id: string) => void }) {
   const personName = item.activity?.person?.name ?? item.owner?.name;
   const avatar = item.activity?.person?.avatarUrl ?? item.owner?.avatarUrl;
 
@@ -173,7 +177,7 @@ function ActivityCard({ item, type, onApprove, onDeny }: { item: ActivityItem; t
         {item.activity?.dueDate ? <Text style={styles.due}>{type === 'lend' ? 'Receive by:' : 'Return by:'} {formatDate(item.activity.dueDate)}</Text> : null}
       </View>
       {showButton ? (
-        <TouchableOpacity style={[styles.actionBtn, styles.actionGoldOutline]}>
+        <TouchableOpacity style={[styles.actionBtn, styles.actionGoldOutline]} onPress={() => onReturn && onReturn(item.id)}>
           <Text style={styles.actionTextGold}>{actionLabel}</Text>
         </TouchableOpacity>
       ) : null}
