@@ -1,3 +1,4 @@
+import { Colors, globalStyles } from '@/styles/globalStyles';
 import { Raleway_500Medium, useFonts } from '@expo-google-fonts/raleway';
 import React, { useMemo, useState } from 'react';
 import { FlatList, Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
@@ -190,9 +191,9 @@ function formatDate(dateStr: string) {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#ffffff' },
+  container: globalStyles.container,
   scroll: { padding: 16, paddingBottom: 40 },
-  header: { fontSize: 24, fontWeight: '700', marginBottom: 12 },
+  header: globalStyles.headerBold,
   segmentWrap: { flexDirection: 'row', backgroundColor: '#f2f2f2', borderRadius: 24, padding: 6, marginBottom: 16 },
   segmentBtn: { flex: 1, paddingVertical: 10, alignItems: 'center', borderRadius: 20 },
   segmentRight: { marginLeft: 6 },
@@ -201,34 +202,57 @@ const styles = StyleSheet.create({
   segmentTextActive: { color: '#111', fontWeight: '600' },
 
   section: { marginBottom: 18 },
-  sectionTitle: { fontSize: 14, fontWeight: '700', color: '#666', marginBottom: 8 },
-  emptyText: { color: '#999', padding: 12 },
+  sectionTitle: globalStyles.sectionTitleSmall,
+  emptyText: globalStyles.emptyText,
 
-  card: { flexDirection: 'row', alignItems: 'center', backgroundColor: '#fff', borderRadius: 12, padding: 12, marginBottom: 12, borderWidth: 1, borderColor: '#eee' },
-  thumb: { width: 72, height: 72, borderRadius: 8, marginRight: 12, backgroundColor: '#ddd' },
+  card: {
+    ...globalStyles.card,
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  thumb: globalStyles.thumbnail,
   cardBody: { flex: 1 },
-  brand: { fontSize: 12, color: '#999' },
-  title: { fontSize: 16, fontWeight: '700', color: '#111', marginVertical: 4 },
-  ownerRow: { flexDirection: 'row', alignItems: 'center' },
-  avatar: { width: 20, height: 20, borderRadius: 10, marginRight: 8 },
-  ownerText: { color: '#666' },
-  due: { color: '#999', marginTop: 6 },
+  brand: {
+    fontSize: 12,
+    color: Colors.textMutedLight,
+  },
+  title: {
+    fontSize: 16,
+    fontWeight: '700',
+    color: Colors.text,
+    marginVertical: 4,
+  },
+  ownerRow: globalStyles.row,
+  avatar: globalStyles.avatarSmall,
+  ownerText: {
+    color: Colors.textMuted,
+  },
+  due: {
+    color: Colors.textMutedLight,
+    marginTop: 6,
+  },
 
-  actionBtn: { paddingHorizontal: 12, paddingVertical: 6, borderRadius: 16, borderWidth: 1, borderColor: '#ddd', marginLeft: 8 },
+  actionBtn: {
+    ...globalStyles.buttonOutline,
+    marginLeft: 8,
+  },
   actionPrimary: { backgroundColor: '#6b0f0f', borderColor: '#6b0f0f' },
   actionText: { color: '#fff', fontWeight: '700' },
-  actionTextMuted: { color: '#666', fontWeight: '700' },
-  actionGoldOutline: { backgroundColor: '#fff', borderColor: '#d4af37' },
-  actionTextGold: { color: '#d4af37', fontWeight: '700' },
+  actionTextMuted: {
+    color: Colors.textMuted,
+    fontWeight: '700',
+  },
+  actionGoldOutline: globalStyles.buttonGoldOutline,
+  actionTextGold: globalStyles.buttonTextGold,
 
   approveActions: { flexDirection: 'column', alignItems: 'flex-end' },
   approveActionBtn: { marginLeft: 0, marginTop: 8, width: 96, alignItems: 'center', justifyContent: 'center' },
-  pill: { paddingHorizontal: 12, paddingVertical: 6, borderRadius: 16 },
-  pillApproved: { backgroundColor: '#6b0f0f' },
-  pillRequested: { backgroundColor: '#fff', borderWidth: 1, borderColor: '#ddd' },
-  pillText: { fontWeight: '700' },
-  pillTextLight: { color: '#fff' },
-  pillTextDark: { color: '#666' }
+  pill: globalStyles.pill,
+  pillApproved: globalStyles.pillApproved,
+  pillRequested: globalStyles.pillRequested,
+  pillText: globalStyles.pillText,
+  pillTextLight: globalStyles.pillTextLight,
+  pillTextDark: globalStyles.pillTextDark,
 });
 
 

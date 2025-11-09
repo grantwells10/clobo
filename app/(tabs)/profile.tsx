@@ -1,4 +1,5 @@
 import { ProfilePage } from '@/components/ProfileComponents/ProfilePage';
+import { globalStyles } from '@/styles/globalStyles';
 import { Raleway_500Medium, Raleway_700Bold, useFonts } from '@expo-google-fonts/raleway';
 import { useRouter } from 'expo-router';
 import { StyleSheet } from 'react-native';
@@ -39,8 +40,5 @@ export default function ProfileScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#ffffff',
-  },
+  container: globalStyles.container,
 });

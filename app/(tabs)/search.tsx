@@ -1,9 +1,10 @@
+import { Colors, globalStyles } from '@/styles/globalStyles';
 import type { Product } from '@/types/product';
 import { Raleway_500Medium, useFonts } from '@expo-google-fonts/raleway';
 import { Image } from 'expo-image';
 import { useRouter } from 'expo-router';
 import { Check, ChevronDown, MapPin, Search as SearchIcon } from 'lucide-react-native';
-import React, { useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import { Dimensions, FlatList, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
@@ -249,10 +250,7 @@ function ProductCard({ item, width }: { item: Product; width: number }) {
 }
 
 const styles = StyleSheet.create({
-  screen: {
-    flex: 1,
-    backgroundColor: '#ffffff',
-  },
+  screen: globalStyles.screen,
   headerContainer: {
     paddingTop: 8,
     paddingBottom: 16,
@@ -260,11 +258,7 @@ const styles = StyleSheet.create({
     position: 'relative',
     zIndex: 100,
   },
-  headerTitle: {
-    fontSize: 24,
-    color: '#11181C',
-    fontFamily: 'Raleway_500Medium',
-  },
+  headerTitle: globalStyles.header,
   searchRow: {
     flexDirection: 'row',
     gap: 12,
@@ -274,8 +268,8 @@ const styles = StyleSheet.create({
     flex: 1,
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#ffffff',
-    borderColor: '#D4AF37',
+    backgroundColor: Colors.background,
+    borderColor: Colors.accent,
     borderWidth: 1,
     borderRadius: 12,
     paddingHorizontal: 12,
@@ -284,7 +278,7 @@ const styles = StyleSheet.create({
   searchInput: {
     flex: 1,
     marginLeft: 8,
-    color: '#11181C',
+    color: Colors.text,
   },
   locButton: {
     width: 44,
@@ -293,8 +287,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     borderWidth: 1,
-    borderColor: '#D4AF37',
-    backgroundColor: '#ffffff',
+    borderColor: Colors.accent,
+    backgroundColor: Colors.background,
   },
   metaRow: {
     flexDirection: 'row',
@@ -309,35 +303,17 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: 6,
   },
-  metaText: {
-    color: '#11181C',
-  },
+  metaText: globalStyles.text,
   chipsRow: {
     flexDirection: 'row',
     flexWrap: 'wrap',
     gap: 8,
     alignItems: 'center',
   },
-  chip: {
-    height: 32,
-    paddingHorizontal: 12,
-    borderRadius: 16,
-    borderWidth: 1,
-    borderColor: '#C7CBD1',
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: '#ffffff',
-  },
-  chipText: {
-    color: '#11181C',
-  },
-  chipActive: {
-    borderColor: '#D4AF37',
-    backgroundColor: '#FFF9E8',
-  },
-  chipTextActive: {
-    color: '#11181C',
-  },
+  chip: globalStyles.chip,
+  chipText: globalStyles.chipText,
+  chipActive: globalStyles.chipActive,
+  chipTextActive: globalStyles.chipText,
   optionsRow: {
     flexDirection: 'row',
     flexWrap: 'wrap',
@@ -349,21 +325,21 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
     borderRadius: 14,
     borderWidth: 1,
-    borderColor: '#C7CBD1',
+    borderColor: Colors.border,
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: '#ffffff',
+    backgroundColor: Colors.background,
   },
   optionChipSelected: {
-    borderColor: '#D4AF37',
-    backgroundColor: '#FFF1C2',
+    borderColor: Colors.accent,
+    backgroundColor: Colors.goldBackgroundLight,
   },
   optionChipText: {
-    color: '#11181C',
+    color: Colors.text,
     fontSize: 13,
   },
   optionChipTextSelected: {
-    color: '#11181C',
+    color: Colors.text,
     fontWeight: '600',
   },
   dropdown: {
@@ -372,8 +348,8 @@ const styles = StyleSheet.create({
     right: 0,
     borderRadius: 12,
     borderWidth: 1,
-    borderColor: '#E1E4E8',
-    backgroundColor: '#fff',
+    borderColor: Colors.borderLight,
+    backgroundColor: Colors.background,
     overflow: 'hidden',
     shadowColor: '#000',
     shadowOpacity: 0.08,
@@ -400,11 +376,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
     borderBottomWidth: 1,
-    borderBottomColor: '#F0F2F4',
+    borderBottomColor: Colors.borderLightest,
   },
-  dropdownText: {
-    color: '#11181C',
-  },
+  dropdownText: globalStyles.text,
   dropdownTextSelected: {
     fontWeight: '600',
   },
@@ -413,34 +387,29 @@ const styles = StyleSheet.create({
     height: 32,
     borderRadius: 16,
     borderWidth: 1,
-    borderColor: '#C7CBD1',
+    borderColor: Colors.border,
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: '#ffffff',
+    backgroundColor: Colors.background,
   },
   card: {
     marginTop: 8,
     marginBottom: 20,
   },
-  imagePlaceholder: {
-    width: '100%',
-    height: 160,
-    borderRadius: 12,
-    backgroundColor: '#EEEEEE',
-  },
+  imagePlaceholder: globalStyles.imagePlaceholder,
   image: {
     width: '100%',
     height: 160,
     borderRadius: 12,
     overflow: 'hidden',
-    backgroundColor: '#F6F6F6',
+    backgroundColor: Colors.placeholderLight,
   },
   brand: {
     marginTop: 8,
-    color: '#687076',
+    ...globalStyles.textMuted,
   },
   title: {
-    color: '#11181C',
+    color: Colors.text,
     fontFamily: 'Raleway_500Medium',
   },
 });
