@@ -19,7 +19,7 @@ You will need either of the following (we used Expo Go app)
 
 ### Running the App
 
-    npm expo start
+    npx expo start
 
 Then choose one of the following:
 * Press i to open the iOS simulator
