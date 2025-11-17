@@ -271,7 +271,6 @@ const AddListingModal: FC<{ visible: boolean; onClose: () => void; onAddListing?
 
 const Header: FC = () => (
   <View style={globalStyles.profileHeader}>
-    <Text style={globalStyles.profileHeaderTitle}>My Profile</Text>
   </View>
 );
 

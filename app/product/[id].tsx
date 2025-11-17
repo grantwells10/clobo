@@ -1,10 +1,12 @@
 import { getUserListing } from '@/data/userListings';
+import { addUserRequest, getUserRequests } from '@/data/userRequests';
 import type { Product } from '@/types/product';
 import { Raleway_500Medium, Raleway_700Bold, useFonts } from '@expo-google-fonts/raleway';
 import { FontAwesome } from '@expo/vector-icons';
+import { useFocusEffect } from '@react-navigation/native';
 import { Image } from 'expo-image';
-import { useLocalSearchParams } from 'expo-router';
-import React, { useState } from 'react';
+import { useLocalSearchParams, useRouter } from 'expo-router';
+import React, { useCallback, useEffect, useState } from 'react';
 import { Alert, Linking, Modal, Pressable, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
@@ -17,11 +19,42 @@ const products = require('@/data/products.json') as Product[];
 export default function ProductDetail() {
   const { id, isOwnListing } = useLocalSearchParams<{ id: string; isOwnListing?: string }>();
   const [loaded] = useFonts({ Raleway_500Medium, Raleway_700Bold });
+  const router = useRouter();
+  const [isRequested, setIsRequested] = useState(false);
   
   // Check if this is the user's own listing
   const isOwn = isOwnListing === 'true';
   const userListing = isOwn ? getUserListing(id) : null;
   const product = !isOwn ? products.find((p) => p.id === id) : null;
+
+  // Check if product is already requested
+  const checkIfRequested = useCallback(() => {
+    if (!product) return;
+    const userRequests = getUserRequests();
+    const requested = userRequests.some(req => req.id === product.id);
+    setIsRequested(requested);
+  }, [product]);
+
+  // Initial check on mount
+  useEffect(() => {
+    checkIfRequested();
+  }, [checkIfRequested]);
+
+  // Refresh requested status when screen comes into focus
+  useFocusEffect(
+    useCallback(() => {
+      checkIfRequested();
+    }, [checkIfRequested])
+  );
+
+  const handleRequestToBorrow = () => {
+    if (!product || isRequested) return;
+    
+    addUserRequest(product);
+    setIsRequested(true);
+    // Navigate to activity page with requests tab
+    router.push({ pathname: '/activity', params: { initialTab: 'requests' } });
+  };
   
   // Use user listing data if it's their own, otherwise use product data
   const item = isOwn && userListing ? {
@@ -149,8 +182,18 @@ export default function ProductDetail() {
                 </TouchableOpacity>
               ) : null}
             </View>
-            <Pressable style={[styles.button, { marginTop: 16 }]}>
-              <Text style={styles.buttonText}>Request to Borrow</Text>
+            <Pressable 
+              style={[
+                styles.button, 
+                { marginTop: 16 },
+                isRequested && styles.buttonRequested
+              ]} 
+              onPress={handleRequestToBorrow}
+              disabled={isRequested}
+            >
+              <Text style={[styles.buttonText, isRequested && styles.buttonTextRequested]}>
+                {isRequested ? 'Requested' : 'Request to Borrow'}
+              </Text>
             </Pressable>
           </Card>
         )}
@@ -276,6 +319,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
+  buttonRequested: {
+    backgroundColor: '#E6E8EB',
+  },
   buttonText: {
     color: '#fff',
     fontFamily: 'Raleway_500Medium',
@@ -313,7 +359,10 @@ const styles = StyleSheet.create({
     marginTop: 12,
     alignItems: 'center',
   },
-  modalBtnText: { fontSize: 16, fontWeight: '700', color: '#222' }
+  modalBtnText: { fontSize: 16, fontWeight: '700', color: '#222' },
+  buttonTextRequested: {
+    color: '#687076',
+  },
 });
 
 
