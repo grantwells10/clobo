@@ -1,7 +1,10 @@
+import { getUserRequests } from '@/data/userRequests';
 import { Colors, globalStyles } from '@/styles/globalStyles';
 import { Raleway_500Medium, useFonts } from '@expo-google-fonts/raleway';
-import React, { useMemo, useState } from 'react';
-import { FlatList, Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { useFocusEffect } from '@react-navigation/native';
+import { useLocalSearchParams, useRouter } from 'expo-router';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import { FlatList, Image, Pressable, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 const rawActivity = require('../../data/activity.json');
@@ -9,9 +12,43 @@ const rawActivity = require('../../data/activity.json');
 type ActivityItem = typeof rawActivity[number];
 
 export default function ActivityScreen() {
+  const { initialTab } = useLocalSearchParams<{ initialTab?: string }>();
   const [items, setItems] = useState<ActivityItem[]>(rawActivity);
   const [loaded] = useFonts({ Raleway_500Medium });
-  const [tab, setTab] = useState<'current' | 'requests'>('current');
+  const [tab, setTab] = useState<'current' | 'requests'>(
+    initialTab === 'requests' ? 'requests' : 'current'
+  );
+
+  // Function to refresh items from store
+  const refreshItems = useCallback(() => {
+    const userRequests = getUserRequests();
+    // Filter out items that have activity.person.name === 'You' and status === 'requested' (hardcoded ones)
+    const filteredActivity = rawActivity.filter((it: ActivityItem) => 
+      !(it.activity && it.activity.person?.name === 'You' && (it.activity.status === 'requested' || it.activity.status === 'approved'))
+    );
+    // Merge with user requests
+    const allItems = [...filteredActivity, ...userRequests] as ActivityItem[];
+    setItems(allItems);
+  }, []);
+
+  // Initial load
+  useEffect(() => {
+    refreshItems();
+  }, [refreshItems]);
+
+  // Set initial tab from params if provided
+  useEffect(() => {
+    if (initialTab === 'requests') {
+      setTab('requests');
+    }
+  }, [initialTab]);
+
+  // Refresh when screen comes into focus (e.g., after adding a request)
+  useFocusEffect(
+    useCallback(() => {
+      refreshItems();
+    }, [refreshItems])
+  );
 
   const currentBorrowing = useMemo(() => items.filter((it) => it.activity?.status === 'current' && it.activity?.role === 'borrowed'), [items]);
   const currentLending = useMemo(() => items.filter((it) => it.activity?.status === 'current' && it.activity?.role === 'lending'), [items]);
@@ -35,8 +72,6 @@ export default function ActivityScreen() {
   return (
     <SafeAreaView style={styles.container} edges={['top']}>
       <View style={styles.scroll}>
-        <Text style={styles.header}>Activity</Text>
-
         <View style={styles.segmentWrap}>
           <TouchableOpacity onPress={() => setTab('current')} style={[styles.segmentBtn, tab === 'current' && styles.segmentActive]}>
             <Text style={[styles.segmentText, tab === 'current' && styles.segmentTextActive]}>Current</Text>
@@ -113,14 +148,19 @@ function Empty({ text }: { text: string }) {
 }
 
 function ActivityCard({ item, type, onApprove, onDeny, onReturn }: { item: ActivityItem; type: 'borrow' | 'lend' | 'yourRequest' | 'approveRequest' ; onApprove?: (id: string) => void; onDeny?: (id: string) => void; onReturn?: (id: string) => void }) {
+  const router = useRouter();
   const personName = item.activity?.person?.name ?? item.owner?.name;
   const avatar = item.activity?.person?.avatarUrl ?? item.owner?.avatarUrl;
+
+  const handlePress = () => {
+    router.push({ pathname: '/product/[id]', params: { id: item.id } });
+  };
 
   if (type === 'yourRequest') {
     const status = item.activity?.status === 'approved' ? 'Approved' : 'Requested';
     const ownerName = item.owner?.name ?? item.activity?.person?.name;
     return (
-      <View style={styles.card}>
+      <Pressable style={styles.card} onPress={handlePress}>
         <Image source={{ uri: item.imageUrl }} style={styles.thumb} resizeMode="cover" />
         <View style={styles.cardBody}>
           <Text style={styles.brand}>{item.brand}</Text>
@@ -133,13 +173,13 @@ function ActivityCard({ item, type, onApprove, onDeny, onReturn }: { item: Activ
         <View style={[styles.pill, item.activity?.status === 'approved' ? styles.pillApproved : styles.pillRequested]}>
           <Text style={[styles.pillText, item.activity?.status === 'approved' ? styles.pillTextLight : styles.pillTextDark]}>{status}</Text>
         </View>
-      </View>
+      </Pressable>
     );
   }
 
   if (type === 'approveRequest') {
     return (
-      <View style={styles.card}>
+      <Pressable style={styles.card} onPress={handlePress}>
         <Image source={{ uri: item.imageUrl }} style={styles.thumb} resizeMode="cover" />
         <View style={styles.cardBody}>
           <Text style={styles.brand}>{item.brand}</Text>
@@ -150,14 +190,14 @@ function ActivityCard({ item, type, onApprove, onDeny, onReturn }: { item: Activ
           </View>
         </View>
         <View style={styles.approveActions}>
-          <TouchableOpacity style={[styles.actionBtn, styles.actionGoldOutline, styles.approveActionBtn]} onPress={() => onApprove && onApprove(item.id)}>
+          <TouchableOpacity style={[styles.actionBtn, styles.actionGoldOutline, styles.approveActionBtn]} onPress={(e) => { e.stopPropagation(); onApprove && onApprove(item.id); }}>
             <Text style={styles.actionTextGold}>Approve</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={[styles.actionBtn, styles.approveActionBtn]} onPress={() => onDeny && onDeny(item.id)}>
+          <TouchableOpacity style={[styles.actionBtn, styles.approveActionBtn]} onPress={(e) => { e.stopPropagation(); onDeny && onDeny(item.id); }}>
             <Text style={styles.actionTextMuted}>Deny</Text>
           </TouchableOpacity>
         </View>
-      </View>
+      </Pressable>
     );
   }
 
@@ -165,7 +205,7 @@ function ActivityCard({ item, type, onApprove, onDeny, onReturn }: { item: Activ
   const showButton = type === 'borrow';
 
   return (
-    <View style={styles.card}>
+    <Pressable style={styles.card} onPress={handlePress}>
       <Image source={{ uri: item.imageUrl }} style={styles.thumb} resizeMode="cover" />
       <View style={styles.cardBody}>
         <Text style={styles.brand}>{item.brand}</Text>
@@ -177,11 +217,11 @@ function ActivityCard({ item, type, onApprove, onDeny, onReturn }: { item: Activ
         {item.activity?.dueDate ? <Text style={styles.due}>{type === 'lend' ? 'Receive by:' : 'Return by:'} {formatDate(item.activity.dueDate)}</Text> : null}
       </View>
       {showButton ? (
-        <TouchableOpacity style={[styles.actionBtn, styles.actionGoldOutline]} onPress={() => onReturn && onReturn(item.id)}>
+        <TouchableOpacity style={[styles.actionBtn, styles.actionGoldOutline]} onPress={(e) => { e.stopPropagation(); onReturn && onReturn(item.id); }}>
           <Text style={styles.actionTextGold}>{actionLabel}</Text>
         </TouchableOpacity>
       ) : null}
-    </View>
+    </Pressable>
   );
 }
 

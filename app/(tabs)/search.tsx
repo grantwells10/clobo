@@ -1,10 +1,12 @@
+import { getUserRequests } from '@/data/userRequests';
 import { Colors, globalStyles } from '@/styles/globalStyles';
 import type { Product } from '@/types/product';
 import { Raleway_500Medium, useFonts } from '@expo-google-fonts/raleway';
 import { Image } from 'expo-image';
+import { useFocusEffect } from '@react-navigation/native';
 import { useRouter } from 'expo-router';
 import { Check, ChevronDown, MapPin, Search as SearchIcon } from 'lucide-react-native';
-import { useMemo, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import { Dimensions, FlatList, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
@@ -17,6 +19,16 @@ export default function SearchScreen() {
   const [filters, setFilters] = useState<{ size: string | null; material: string | null; color: string | null; occasion: string | null }>({ size: null, material: null, color: null, occasion: null });
   const [sortOption, setSortOption] = useState<'popularity' | 'distance'>('popularity');
   const [sortOpen, setSortOpen] = useState(false);
+  const [requestedIds, setRequestedIds] = useState<Set<string>>(new Set());
+
+  // Refresh requested IDs when screen comes into focus
+  useFocusEffect(
+    useCallback(() => {
+      const userRequests = getUserRequests();
+      const ids = new Set(userRequests.map(req => req.id));
+      setRequestedIds(ids);
+    }, [])
+  );
 
   const contentPadding = 16;
   const gap = 12;
@@ -30,6 +42,10 @@ export default function SearchScreen() {
   const filteredData = useMemo(() => {
     const q = query.trim().toLowerCase();
     return productsData.filter((p) => {
+      // Filter out products that have been requested
+      if (requestedIds.has(p.id)) {
+        return false;
+      }
       const title = (p.title ?? '').toLowerCase();
       const brand = (p.brand ?? '').toLowerCase();
       const matchQuery = q ? title.includes(q) || brand.includes(q) : true;
@@ -39,7 +55,7 @@ export default function SearchScreen() {
       const matchOccasion = filters.occasion ? (p.occasion ?? '').toLowerCase() === filters.occasion.toLowerCase() : true;
       return matchQuery && matchSize && matchMaterial && matchColor && matchOccasion;
     });
-  }, [query, filters]);
+  }, [query, filters, requestedIds]);
 
   const sortedData = useMemo(() => {
     const copy = [...filteredData];
@@ -115,7 +131,6 @@ function SearchHeader(
   return (
     <View style={styles.headerContainer}>
       {sortOpen && <Pressable style={styles.headerOverlay} onPress={() => setSortOpen(false)} />}
-      <Text style={styles.headerTitle}>Search</Text>
 
       <View style={styles.searchRow}>
         <View style={styles.searchField}>

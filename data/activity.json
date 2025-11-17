@@ -18,24 +18,6 @@
     "activity": { "role": "borrowed", "direction": "from", "person": { "name": "Sarah Kim", "avatarUrl": "https://i.pravatar.cc/100?img=12" }, "status": "current", "dueDate": "2025-10-30" }
   },
   {
-    "id": "hm-denim-jacket",
-    "brand": "H&M",
-    "title": "Denim Jacket",
-    "category": "Outerwear",
-    "material": "Denim",
-    "color": "Blue",
-    "occasion": "Everyday",
-    "sizes": ["S", "M", "L", "XL"],
-    "distanceKm": 4.8,
-    "popularityScore": 72,
-    "imageUrl": "https://image.hm.com/assets/hm/ac/fd/acfde23566dde0ea4c2c0d08dcfaf7e258b58bd1.jpg?imwidth=786",
-    "sizeLabel": "Large",
-    "description": "Classic denim jacket with a relaxed fit. Slightly faded wash.",
-    "washingInstructions": "Cold wash, do not bleach. Line dry.",
-    "owner": { "name": "Alex Chen", "avatarUrl": "https://i.pravatar.cc/100?img=5", "mutualFriends": 1 },
-    "activity": { "role": "requesting", "direction": "to", "person": { "name": "You", "avatarUrl": "https://i.pravatar.cc/100?img=1" }, "status": "requested", "requestedDate": "2025-10-15" }
-  },
-  {
     "id": "vintage-knit-sweater",
     "brand": "Zadig & Voltaire",
     "title": "Knit Sweater",
@@ -88,24 +70,6 @@
     "washingInstructions": "Dry clean recommended.",
     "owner": { "name": "Olivia Brown", "avatarUrl": "https://i.pravatar.cc/100?img=45", "mutualFriends": 4 },
     "activity": { "role": "lending", "direction": "to", "person": { "name": "Emma Rod", "avatarUrl": "https://i.pravatar.cc/100?img=68" }, "status": "current", "dueDate": "2025-11-05" }
-  },
-  {
-    "id": "drmartens-leather-boots",
-    "brand": "Dr. Martens",
-    "title": "Leather Boots",
-    "category": "Shoes",
-    "material": "Leather",
-    "color": "Black",
-    "occasion": "Casual",
-    "sizes": ["6", "7", "8", "9", "10"],
-    "distanceKm": 9.1,
-    "popularityScore": 77,
-    "imageUrl": "https://cdn.media.amplience.net/i/drmartens/15265001.80?$smart576$&fmt=auto",
-    "sizeLabel": "US 8",
-    "description": "Iconic lace-up leather boots with air-cushioned sole.",
-    "washingInstructions": "Wipe with damp cloth and condition leather.",
-    "owner": { "name": "Sam Rivera", "avatarUrl": "https://i.pravatar.cc/100?img=68", "mutualFriends": 5 },
-    "activity": { "role": "requesting", "direction": "to", "person": { "name": "You", "avatarUrl": "https://i.pravatar.cc/100?img=1" }, "status": "requested", "requestedDate": "2025-10-22" }
   },
   {
     "id": "floral-day-dress",
