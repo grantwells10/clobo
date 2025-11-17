@@ -1,6 +1,6 @@
 import { useRouter } from 'expo-router';
 import { useMemo, useState } from 'react';
-import { FlatList, Image, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { Alert, FlatList, Image, Linking, Modal, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 // hide the default header provided by the router for this screen
@@ -18,6 +18,9 @@ export default function FriendsScreen() {
   const [phone, setPhone] = useState('');
   const [notFound, setNotFound] = useState(false);
   const [selected, setSelected] = useState<User | null>(null);
+
+  const [contacting, setContacting] = useState<User | null>(null);
+  const [modalVisible, setModalVisible] = useState(false);
 
   const friends = useMemo(() => users.filter((u) => u.isFriend), [users]);
 
@@ -52,6 +55,43 @@ export default function FriendsScreen() {
     setNotFound(false);
   }
 
+  function contactFriend(phone: string, method: 'imessage' | 'sms' | 'whatsapp') {
+    const numberOnly = phone.replace(/\D/g, '');
+    let url = '';
+    if (method === 'imessage' || method === 'sms') {
+      url = `sms:${numberOnly}`;
+    } else if (method === 'whatsapp') {
+      url = `whatsapp://send?phone=${numberOnly}`;
+    }
+    Linking.canOpenURL(url)
+      .then((supported) => {
+        if (!supported) {
+          Alert.alert(
+            'App Not Found',
+            method === 'whatsapp'
+              ? 'WhatsApp is not installed'
+              : 'Cannot open Messages app'
+          );
+        } else {
+          return Linking.openURL(url);
+        }
+      })
+      .catch(() =>
+        Alert.alert('Error', 'Could not complete the action. Please try again.')
+      );
+  }
+
+  function showContactModal(friend: User) {
+    setContacting(friend);
+    setModalVisible(true);
+  }
+
+  function closeContactModal() {
+    setContacting(null);
+    setModalVisible(false);
+  }
+
+
   return (
     <SafeAreaView style={styles.container} edges={["top"]}>
       <View style={styles.headerRow}>
@@ -69,7 +109,6 @@ export default function FriendsScreen() {
           onChangeText={(txt) => {
             setPhone(txt);
             setNotFound(false);
-            // auto-populate when reached 10 digits (last 10)
             const clean = (txt || '').replace(/\D/g, '');
             if (clean.length >= 10) {
               const found = findMatchByLast10(clean);
@@ -114,15 +153,45 @@ export default function FriendsScreen() {
         data={friends}
         keyExtractor={(i) => i.id}
         renderItem={({ item }) => (
-          <View style={styles.friendRow}>
+          <TouchableOpacity
+            style={styles.friendRow}
+            onPress={() => showContactModal(item)}
+          >
             <Image source={{ uri: item.avatarUrl }} style={styles.avatarSmall} />
             <View style={{ marginLeft: 12 }}>
               <Text style={styles.name}>{item.name}</Text>
               <Text style={styles.phone}>{item.phone}</Text>
             </View>
-          </View>
+          </TouchableOpacity>
         )}
       />
+
+      <Modal
+        visible={modalVisible}
+        transparent
+        animationType="slide"
+        onRequestClose={closeContactModal}
+      >
+        <View style={styles.modalContainer}>
+          <View style={styles.modalSheet}>
+            {contacting && (
+              <>
+                <Text style={[styles.name, { fontSize: 18, marginBottom: 6 }]}>Contact {contacting.name}</Text>
+                <Text style={styles.phone}>{contacting.phone}</Text>
+                <TouchableOpacity style={styles.modalBtn} onPress={() => { contactFriend(contacting.phone, 'imessage'); closeContactModal(); }}>
+                  <Text style={styles.modalBtnText}>Message (iMessage/SMS)</Text>
+                </TouchableOpacity>
+                <TouchableOpacity style={styles.modalBtn} onPress={() => { contactFriend(contacting.phone, 'whatsapp'); closeContactModal(); }}>
+                  <Text style={styles.modalBtnText}>WhatsApp</Text>
+                </TouchableOpacity>
+                <TouchableOpacity style={styles.modalBtn} onPress={closeContactModal}>
+                  <Text style={[styles.modalBtnText, { color: 'red' }]}>Cancel</Text>
+                </TouchableOpacity>
+              </>
+            )}
+          </View>
+        </View>
+      </Modal>
     </SafeAreaView>
   );
 }
@@ -153,4 +222,30 @@ const styles = StyleSheet.create({
   sub: { fontWeight: '700', marginTop: 10, marginBottom: 8, color: '#666' },
   friendRow: { flexDirection: 'row', alignItems: 'center', paddingVertical: 8, borderBottomWidth: 1, borderBottomColor: '#f4f4f4' },
   notFoundText: { color: 'red', fontWeight: '700', textAlign: 'center', marginTop: 12 },
+  modalContainer: {
+    flex: 1,
+    justifyContent: 'flex-end',
+    backgroundColor: 'rgba(0,0,0,0.4)',
+  },
+  modalSheet: {
+    backgroundColor: '#fff',
+    borderTopLeftRadius: 18,
+    borderTopRightRadius: 18,
+    padding: 16,
+    marginHorizontal: 0,
+    alignItems: 'center',
+  },
+  modalBtn: {
+    width: '100%',
+    paddingVertical: 12,
+    backgroundColor: '#f4f4f4',
+    borderRadius: 8,
+    marginTop: 12,
+    alignItems: 'center',
+  },
+  modalBtnText: {
+    fontSize: 16,
+    fontWeight: '700',
+    color: '#222',
+  },
 });
