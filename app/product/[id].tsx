@@ -1,5 +1,5 @@
 import { getUserListing } from '@/data/userListings';
-import { addUserRequest, getUserRequests } from '@/data/userRequests';
+import { addUserRequest, getUserRequests, removeUserRequest } from '@/data/userRequests';
 import type { Product } from '@/types/product';
 import { Raleway_500Medium, Raleway_700Bold, useFonts } from '@expo-google-fonts/raleway';
 import { FontAwesome } from '@expo/vector-icons';
@@ -48,12 +48,37 @@ export default function ProductDetail() {
   );
 
   const handleRequestToBorrow = () => {
-    if (!product || isRequested) return;
+    if (!product) return;
     
-    addUserRequest(product);
-    setIsRequested(true);
-    // Navigate to activity page with requests tab
-    router.push({ pathname: '/activity', params: { initialTab: 'requests' } });
+    if (isRequested) {
+      // Undo request
+      Alert.alert(
+        'Cancel Request',
+        'Are you sure you want to cancel this request?',
+        [
+          {
+            text: 'Keep Request',
+            style: 'cancel',
+          },
+          {
+            text: 'Cancel Request',
+            style: 'destructive',
+            onPress: () => {
+              removeUserRequest(product.id);
+              setIsRequested(false);
+              // Navigate back to search page
+              router.push('/search');
+            },
+          },
+        ]
+      );
+    } else {
+      // Add new request
+      addUserRequest(product);
+      setIsRequested(true);
+      // Navigate to activity page with requests tab
+      router.push({ pathname: '/activity', params: { initialTab: 'requests' } });
+    }
   };
   
   // Use user listing data if it's their own, otherwise use product data
@@ -189,10 +214,9 @@ export default function ProductDetail() {
                 isRequested && styles.buttonRequested
               ]} 
               onPress={handleRequestToBorrow}
-              disabled={isRequested}
             >
               <Text style={[styles.buttonText, isRequested && styles.buttonTextRequested]}>
-                {isRequested ? 'Requested' : 'Request to Borrow'}
+                {isRequested ? 'Cancel Request' : 'Request to Borrow'}
               </Text>
             </Pressable>
           </Card>
