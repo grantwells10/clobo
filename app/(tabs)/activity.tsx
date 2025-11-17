@@ -1,10 +1,11 @@
-import { getUserRequests } from '@/data/userRequests';
+import { getUserRequests, removeUserRequest } from '@/data/userRequests';
 import { Colors, globalStyles } from '@/styles/globalStyles';
 import { Raleway_500Medium, useFonts } from '@expo-google-fonts/raleway';
 import { useFocusEffect } from '@react-navigation/native';
+import { X } from 'lucide-react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { FlatList, Image, Pressable, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Alert, FlatList, Image, Pressable, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 const rawActivity = require('../../data/activity.json');
@@ -13,6 +14,7 @@ type ActivityItem = typeof rawActivity[number];
 
 export default function ActivityScreen() {
   const { initialTab } = useLocalSearchParams<{ initialTab?: string }>();
+  const router = useRouter();
   const [items, setItems] = useState<ActivityItem[]>(rawActivity);
   const [loaded] = useFonts({ Raleway_500Medium });
   const [tab, setTab] = useState<'current' | 'requests'>(
@@ -67,6 +69,27 @@ export default function ActivityScreen() {
     setItems((prev) => prev.map((it) => it.id === id ? (() => { const copy = { ...it }; delete (copy as any).activity; return copy; })() : it));
   }
 
+  function handleCancelRequest(id: string) {
+    Alert.alert(
+      'Cancel Request',
+      'Are you sure you want to cancel this request?',
+      [
+        {
+          text: 'Keep Request',
+          style: 'cancel',
+        },
+        {
+          text: 'Cancel Request',
+          style: 'destructive',
+          onPress: () => {
+            removeUserRequest(id);
+            refreshItems();
+          },
+        },
+      ]
+    );
+  }
+
   if (!loaded) return null;
 
   return (
@@ -110,7 +133,7 @@ export default function ActivityScreen() {
                 <FlatList
                   data={yourRequests}
                   keyExtractor={(i) => i.id}
-                  renderItem={({ item }) => <ActivityCard item={item} type="yourRequest" />}
+                  renderItem={({ item }) => <ActivityCard item={item} type="yourRequest" onCancelRequest={handleCancelRequest} />}
                 />
               )}
             </Section>
@@ -147,7 +170,7 @@ function Empty({ text }: { text: string }) {
   return <Text style={styles.emptyText}>{text}</Text>;
 }
 
-function ActivityCard({ item, type, onApprove, onDeny, onReturn }: { item: ActivityItem; type: 'borrow' | 'lend' | 'yourRequest' | 'approveRequest' ; onApprove?: (id: string) => void; onDeny?: (id: string) => void; onReturn?: (id: string) => void }) {
+function ActivityCard({ item, type, onApprove, onDeny, onReturn, onCancelRequest }: { item: ActivityItem; type: 'borrow' | 'lend' | 'yourRequest' | 'approveRequest' ; onApprove?: (id: string) => void; onDeny?: (id: string) => void; onReturn?: (id: string) => void; onCancelRequest?: (id: string) => void }) {
   const router = useRouter();
   const personName = item.activity?.person?.name ?? item.owner?.name;
   const avatar = item.activity?.person?.avatarUrl ?? item.owner?.avatarUrl;
@@ -160,20 +183,31 @@ function ActivityCard({ item, type, onApprove, onDeny, onReturn }: { item: Activ
     const status = item.activity?.status === 'approved' ? 'Approved' : 'Requested';
     const ownerName = item.owner?.name ?? item.activity?.person?.name;
     return (
-      <Pressable style={styles.card} onPress={handlePress}>
-        <Image source={{ uri: item.imageUrl }} style={styles.thumb} resizeMode="cover" />
-        <View style={styles.cardBody}>
-          <Text style={styles.brand}>{item.brand}</Text>
-          <Text style={styles.title}>{item.title}</Text>
-          <View style={styles.ownerRow}>
-            <Image source={{ uri: avatar }} style={styles.avatar} />
-            <Text style={styles.ownerText}>{`From ${ownerName}`}</Text>
+      <View style={styles.card}>
+        <Pressable style={{ flex: 1, flexDirection: 'row', alignItems: 'center' }} onPress={handlePress}>
+          <Image source={{ uri: item.imageUrl }} style={styles.thumb} resizeMode="cover" />
+          <View style={styles.cardBody}>
+            <Text style={styles.brand}>{item.brand}</Text>
+            <Text style={styles.title}>{item.title}</Text>
+            <View style={styles.ownerRow}>
+              <Image source={{ uri: avatar }} style={styles.avatar} />
+              <Text style={styles.ownerText}>{`From ${ownerName}`}</Text>
+            </View>
           </View>
-        </View>
-        <View style={[styles.pill, item.activity?.status === 'approved' ? styles.pillApproved : styles.pillRequested]}>
-          <Text style={[styles.pillText, item.activity?.status === 'approved' ? styles.pillTextLight : styles.pillTextDark]}>{status}</Text>
-        </View>
-      </Pressable>
+        </Pressable>
+        {item.activity?.status === 'approved' ? (
+          <View style={[styles.pill, styles.pillApproved]}>
+            <Text style={[styles.pillText, styles.pillTextLight]}>{status}</Text>
+          </View>
+        ) : (
+          <TouchableOpacity 
+            style={styles.cancelXButton}
+            onPress={(e) => { e.stopPropagation(); onCancelRequest && onCancelRequest(item.id); }}
+          >
+            <X size={18} color={Colors.textMuted} />
+          </TouchableOpacity>
+        )}
+      </View>
     );
   }
 
@@ -288,6 +322,16 @@ const styles = StyleSheet.create({
   },
   actionGoldOutline: globalStyles.buttonGoldOutline,
   actionTextGold: globalStyles.buttonTextGold,
+  cancelXButton: {
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    borderWidth: 1,
+    borderColor: Colors.borderLight,
+    backgroundColor: Colors.background,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
 
   approveActions: { flexDirection: 'column', alignItems: 'flex-end' },
   approveActionBtn: { marginLeft: 0, marginTop: 8, width: 96, alignItems: 'center', justifyContent: 'center' },
