@@ -48,7 +48,7 @@
     "sizeLabel": "Medium",
     "description": "Cozy cable-knit sweater in soft wool.",
     "washingInstructions": "Hand wash cold, lay flat to dry.",
-    "owner": { "name": "You", "avatarUrl": "https://i.pravatar.cc/100?img=1", "mutualFriends": 0 }
+    "owner": { "name": "You" }
   },
   {
     "id": "levis-high-waist-jeans",
@@ -82,7 +82,7 @@
     "sizeLabel": "Small",
     "description": "Silky blouse with subtle sheen and relaxed drape.",
     "washingInstructions": "Dry clean recommended.",
-    "owner": { "name": "Olivia Brown", "avatarUrl": "https://i.pravatar.cc/100?img=45", "mutualFriends": 4 }
+    "owner": { "name": "You", "avatarUrl": "https://i.pravatar.cc/100?img=45", "mutualFriends": 4 }
   },
   {
     "id": "drmartens-leather-boots",

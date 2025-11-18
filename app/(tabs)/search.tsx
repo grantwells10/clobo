@@ -2,8 +2,8 @@ import { getUserRequests } from '@/data/userRequests';
 import { Colors, globalStyles } from '@/styles/globalStyles';
 import type { Product } from '@/types/product';
 import { Raleway_500Medium, useFonts } from '@expo-google-fonts/raleway';
-import { Image } from 'expo-image';
 import { useFocusEffect } from '@react-navigation/native';
+import { Image } from 'expo-image';
 import { useRouter } from 'expo-router';
 import { Check, ChevronDown, MapPin, Search as SearchIcon } from 'lucide-react-native';
 import { useCallback, useMemo, useState } from 'react';
@@ -44,6 +44,10 @@ export default function SearchScreen() {
     return productsData.filter((p) => {
       // Filter out products that have been requested
       if (requestedIds.has(p.id)) {
+        return false;
+      }
+      // Filter out products owned by "You"
+      if (p.owner?.name === 'You') {
         return false;
       }
       const title = (p.title ?? '').toLowerCase();

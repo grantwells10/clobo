@@ -32,7 +32,7 @@
     "sizeLabel": "Medium",
     "description": "Cozy cable-knit sweater in soft wool.",
     "washingInstructions": "Hand wash cold, lay flat to dry.",
-    "owner": { "name": "You", "avatarUrl": "https://i.pravatar.cc/100?img=1", "mutualFriends": 0 },
+    "owner": { "name": "You" },
     "activity": { "role": "lending", "direction": "to", "person": { "name": "Alex Chen", "avatarUrl": "https://i.pravatar.cc/100?img=5" }, "status": "current", "dueDate": "2025-10-28" }
   },
   {
@@ -50,7 +50,7 @@
     "sizeLabel": "Medium",
     "description": "Cozy cable-knit sweater in soft wool.",
     "washingInstructions": "Hand wash cold, lay flat to dry.",
-    "owner": { "name": "You", "avatarUrl": "https://i.pravatar.cc/100?img=1", "mutualFriends": 0 },
+    "owner": { "name": "You" },
     "activity": { "role": "requested", "direction": "from", "person": { "name": "James Liu", "avatarUrl": "https://i.pravatar.cc/100?img=10" }, "status": "requested", "requestedDate": "2025-10-20" }
   },
   {
@@ -68,7 +68,7 @@
     "sizeLabel": "Small",
     "description": "Silky blouse with subtle sheen and relaxed drape.",
     "washingInstructions": "Dry clean recommended.",
-    "owner": { "name": "You", "avatarUrl": "https://i.pravatar.cc/100?img=1", "mutualFriends": 0 },
+    "owner": { "name": "You" },
     "activity": { "role": "lending", "direction": "to", "person": { "name": "Emma Rod", "avatarUrl": "https://i.pravatar.cc/100?img=68" }, "status": "current", "dueDate": "2025-11-05" }
   },
   {
