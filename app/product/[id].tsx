@@ -16,15 +16,19 @@ export const options = {
 const products = require('@/data/products.json') as Product[];
 
 export default function ProductDetail() {
-  const { id, isOwnListing } = useLocalSearchParams<{ id: string; isOwnListing?: string }>();
+  const { id, isOwnListing, isBorrowing } = useLocalSearchParams<{ id: string; isOwnListing?: string; isBorrowing?: string }>();
   const [loaded] = useFonts({ Raleway_500Medium, Raleway_700Bold });
   const router = useRouter();
   const [isRequested, setIsRequested] = useState(false);
   
   // Check if this is the user's own listing
   const isOwn = isOwnListing === 'true';
+  const isCurrentlyBorrowing = isBorrowing === 'true';
   const userListing = isOwn ? getUserListing(id) : null;
-  const product = !isOwn ? products.find((p) => p.id === id) : null;
+  // Always try to find product, even if isOwn is true (for activity items)
+  const product = products.find((p) => p.id === id) || null;
+  // Also check if product owner is "You" to hide lender info
+  const isOwnedByUser = product?.owner?.name === 'You' || isOwn;
 
   // Check if product is already requested
   const checkIfRequested = useCallback(() => {
@@ -144,7 +148,7 @@ export default function ProductDetail() {
           <Text style={styles.body}>{item.washingInstructions || '—'}</Text>
         </Card>
 
-        {!isOwn && product && (
+        {!isOwnedByUser && product && (
           <Card>
             <Text style={styles.sectionTitle}>Lender Info</Text>
             <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12, marginTop: 12 }}>
@@ -165,18 +169,20 @@ export default function ProductDetail() {
                 </View>
               </View>
             </View>
-            <Pressable 
-              style={[
-                styles.button, 
-                { marginTop: 16 },
-                isRequested && styles.buttonRequested
-              ]} 
-              onPress={handleRequestToBorrow}
-            >
-              <Text style={[styles.buttonText, isRequested && styles.buttonTextRequested]}>
-                {isRequested ? 'Cancel Request' : 'Request to Borrow'}
-              </Text>
-            </Pressable>
+            {!isCurrentlyBorrowing && (
+              <Pressable 
+                style={[
+                  styles.button, 
+                  { marginTop: 16 },
+                  isRequested && styles.buttonRequested
+                ]} 
+                onPress={handleRequestToBorrow}
+              >
+                <Text style={[styles.buttonText, isRequested && styles.buttonTextRequested]}>
+                  {isRequested ? 'Cancel Request' : 'Request to Borrow'}
+                </Text>
+              </Pressable>
+            )}
           </Card>
         )}
       </ScrollView>

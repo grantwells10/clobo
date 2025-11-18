@@ -2,8 +2,8 @@ import { getUserRequests, removeUserRequest } from '@/data/userRequests';
 import { Colors, globalStyles } from '@/styles/globalStyles';
 import { Raleway_500Medium, useFonts } from '@expo-google-fonts/raleway';
 import { useFocusEffect } from '@react-navigation/native';
-import { X } from 'lucide-react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
+import { X } from 'lucide-react-native';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { Alert, FlatList, Image, Pressable, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -176,7 +176,14 @@ function ActivityCard({ item, type, onApprove, onDeny, onReturn, onCancelRequest
   const avatar = item.activity?.person?.avatarUrl ?? item.owner?.avatarUrl;
 
   const handlePress = () => {
-    router.push({ pathname: '/product/[id]', params: { id: item.id } });
+    const params: { id: string; isBorrowing?: string; isOwnListing?: string } = { id: item.id };
+    if (type === 'borrow') {
+      params.isBorrowing = 'true';
+    } else if (type === 'lend') {
+      // If you're currently lending an item, you own it
+      params.isOwnListing = 'true';
+    }
+    router.push({ pathname: '/product/[id]', params });
   };
 
   if (type === 'yourRequest') {
@@ -212,16 +219,19 @@ function ActivityCard({ item, type, onApprove, onDeny, onReturn, onCancelRequest
   }
 
   if (type === 'approveRequest') {
+    const isOwn = item.owner?.name === 'You';
     return (
       <Pressable style={styles.card} onPress={handlePress}>
         <Image source={{ uri: item.imageUrl }} style={styles.thumb} resizeMode="cover" />
         <View style={styles.cardBody}>
           <Text style={styles.brand}>{item.brand}</Text>
           <Text style={styles.title}>{item.title}</Text>
-          <View style={styles.ownerRow}>
-            <Image source={{ uri: item.activity?.person?.avatarUrl || item.owner?.avatarUrl }} style={styles.avatar} />
-            <Text style={styles.ownerText}>{item.activity?.person?.name}</Text>
-          </View>
+          {!isOwn && (
+            <View style={styles.ownerRow}>
+              <Image source={{ uri: item.activity?.person?.avatarUrl || item.owner?.avatarUrl }} style={styles.avatar} />
+              <Text style={styles.ownerText}>{item.activity?.person?.name}</Text>
+            </View>
+          )}
         </View>
         <View style={styles.approveActions}>
           <TouchableOpacity style={[styles.actionBtn, styles.actionGoldOutline, styles.approveActionBtn]} onPress={(e) => { e.stopPropagation(); onApprove && onApprove(item.id); }}>
