@@ -82,7 +82,7 @@
     "sizeLabel": "Small",
     "description": "Silky blouse with subtle sheen and relaxed drape.",
     "washingInstructions": "Dry clean recommended.",
-    "owner": { "name": "You", "avatarUrl": "https://i.pravatar.cc/100?img=45", "mutualFriends": 4 }
+    "owner": { "name": "You" }
   },
   {
     "id": "drmartens-leather-boots",
