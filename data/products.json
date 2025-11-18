@@ -14,7 +14,7 @@
     "sizeLabel": "Medium (US 6-8)",
     "description": "Beautiful midi dress perfect for summer outings. Features a flattering fit and flare silhouette with adjustable straps. Worn once to a wedding, excellent condition.",
     "washingInstructions": "Machine wash cold on gentle cycle. Tumble dry low or hang to dry. Iron on low heat if needed.",
-    "owner": { "name": "Sarah Kim", "avatarUrl": "https://i.pravatar.cc/100?img=12", "mutualFriends": 3 }
+    "owner": { "name": "Sarah Kim", "avatarUrl": "https://i.pravatar.cc/100?img=12", "mutualFriends": 3, "phone": "+14155550101" }
   },
   {
     "id": "hm-denim-jacket",
@@ -31,7 +31,7 @@
     "sizeLabel": "Large",
     "description": "Classic denim jacket with a relaxed fit. Slightly faded wash.",
     "washingInstructions": "Cold wash, do not bleach. Line dry.",
-    "owner": { "name": "Alex Chen", "avatarUrl": "https://i.pravatar.cc/100?img=5", "mutualFriends": 1 }
+    "owner": { "name": "Alex Chen", "avatarUrl": "https://i.pravatar.cc/100?img=5", "mutualFriends": 1, "phone": "+14155550202" }
   },
   {
     "id": "vintage-knit-sweater",
@@ -65,7 +65,7 @@
     "sizeLabel": "28",
     "description": "High-waist straight leg jeans with light wash.",
     "washingInstructions": "Turn inside out, cold wash, tumble dry low.",
-    "owner": { "name": "Jordan Lee", "avatarUrl": "https://i.pravatar.cc/100?img=22", "mutualFriends": 0 }
+    "owner": { "name": "Jordan Lee", "avatarUrl": "https://i.pravatar.cc/100?img=22", "mutualFriends": 0, "phone": "+13125598983" }
   },
   {
     "id": "mango-silk-blouse",
@@ -99,7 +99,7 @@
     "sizeLabel": "US 8",
     "description": "Iconic lace-up leather boots with air-cushioned sole.",
     "washingInstructions": "Wipe with damp cloth and condition leather.",
-    "owner": { "name": "Sam Rivera", "avatarUrl": "https://i.pravatar.cc/100?img=68", "mutualFriends": 5 }
+    "owner": { "name": "Sam Rivera", "avatarUrl": "https://i.pravatar.cc/100?img=68", "mutualFriends": 5, "phone": "+19493398765" }
   },
   {
     "id": "floral-day-dress",
@@ -116,7 +116,7 @@
     "sizeLabel": "Medium",
     "description": "Lightweight floral dress perfect for daytime events.",
     "washingInstructions": "Machine wash cold, delicate cycle.",
-    "owner": { "name": "Chloe Nguyen", "avatarUrl": "https://i.pravatar.cc/100?img=14", "mutualFriends": 1 }
+    "owner": { "name": "Chloe Nguyen", "avatarUrl": "https://i.pravatar.cc/100?img=14", "mutualFriends": 1, "phone": "+19495678765" }
   },
   {
     "id": "puffer-jacket",
@@ -133,7 +133,7 @@
     "sizeLabel": "Large",
     "description": "Warm puffer jacket with hood and side pockets.",
     "washingInstructions": "Machine wash cold, gentle cycle. Tumble dry low with tennis balls.",
-    "owner": { "name": "Ben Carter", "avatarUrl": "https://i.pravatar.cc/100?img=28", "mutualFriends": 2 }
+    "owner": { "name": "Ben Carter", "avatarUrl": "https://i.pravatar.cc/100?img=28", "mutualFriends": 2, "phone": "+13124567765" }
   },
   {
     "id": "ribbed-turtleneck",
@@ -150,7 +150,7 @@
     "sizeLabel": "Small",
     "description": "Fine-knit merino turtleneck with ribbed texture.",
     "washingInstructions": "Hand wash cold, reshape and dry flat.",
-    "owner": { "name": "Ava Johnson", "avatarUrl": "https://i.pravatar.cc/100?img=47", "mutualFriends": 6 }
+    "owner": { "name": "Ava Johnson", "avatarUrl": "https://i.pravatar.cc/100?img=47", "mutualFriends": 6, "phone": "+12132209833" }
   }
 ]
 

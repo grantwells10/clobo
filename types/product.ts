@@ -18,6 +18,7 @@ export interface Product {
     name: string;
     avatarUrl?: string;
     mutualFriends?: number;
+    phone?: string;
   };
 }
 
