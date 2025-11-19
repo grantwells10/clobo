@@ -5,7 +5,7 @@ import { Raleway_500Medium, useFonts } from '@expo-google-fonts/raleway';
 import { useFocusEffect } from '@react-navigation/native';
 import { Image } from 'expo-image';
 import { useRouter } from 'expo-router';
-import { Check, ChevronDown, MapPin, Search as SearchIcon } from 'lucide-react-native';
+import { Check, ChevronDown, Search as SearchIcon } from 'lucide-react-native';
 import { useCallback, useMemo, useState } from 'react';
 import { Dimensions, FlatList, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -150,16 +150,9 @@ function SearchHeader(
             returnKeyType="search"
           />
         </View>
-        <View style={styles.locButton}>
-          <MapPin color="#11181C" size={18} />
-        </View>
       </View>
 
       <View style={styles.metaRow}>
-        <View style={styles.inlineRow}>
-          <MapPin color="#11181C" size={16} />
-          <Text style={styles.metaText}>Within 5 km</Text>
-        </View>
         <View style={styles.sortWrapper}>
           <Pressable style={styles.inlineRow} onPress={() => setSortOpen(!sortOpen)}>
             <Text style={styles.metaText}>{sortLabel}</Text>
