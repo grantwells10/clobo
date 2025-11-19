@@ -1,9 +1,10 @@
 import { Colors, globalStyles } from '@/styles/globalStyles';
 import type { Listing, ProfileStats } from '@/types/profile';
+import { Ionicons } from '@expo/vector-icons';
 import { Image } from 'expo-image';
 import * as ImagePicker from 'expo-image-picker';
 import { useRouter } from 'expo-router';
-import { FC, useState } from 'react';
+import { FC, useEffect, useState } from 'react';
 import { Alert, Dimensions, FlatList, Keyboard, Modal, Pressable, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
@@ -269,10 +270,94 @@ const AddListingModal: FC<{ visible: boolean; onClose: () => void; onAddListing?
     );
 };
 
-const Header: FC = () => (
-  <View style={globalStyles.profileHeader}>
+const Header: FC<{ onSettingsPress: () => void }> = ({ onSettingsPress }) => (
+  <View style={[globalStyles.profileHeader, { paddingHorizontal: 16, paddingTop: 8 }]}>
+    <View style={{ flex: 1 }} />
+    <Pressable onPress={onSettingsPress} hitSlop={12} style={{ padding: 8, alignSelf: 'flex-end' }}>
+      <Ionicons name="settings-sharp" size={24} color="black" />
+    </Pressable>
   </View>
 );
+
+const EditProfileModal: FC<{
+  visible: boolean;
+  profile: { name: string; location: string; bio: string };
+  onClose: () => void;
+  onSave: (updated: { name: string; location: string; bio: string }) => void;
+}> = ({ visible, profile, onClose, onSave }) => {
+  const [name, setName] = useState(profile.name);
+  const [location, setLocation] = useState(profile.location);
+  const [bio, setBio] = useState(profile.bio);
+
+  useEffect(() => {
+    setName(profile.name);
+    setLocation(profile.location);
+    setBio(profile.bio);
+  }, [profile, visible]);
+
+  const handleSubmit = () => {
+    if (!name.trim()) {
+      Alert.alert('Error', 'Please enter a name');
+      return;
+    }
+    onSave({ name: name.trim(), location: location.trim(), bio: bio.trim() });
+    onClose();
+  };
+
+  return (
+    <Modal visible={visible} transparent animationType="fade">
+      <Pressable
+        style={globalStyles.modalBackdrop}
+        onPress={e => {
+          if (e.target === e.currentTarget) onClose();
+        }}
+      >
+        <Pressable style={globalStyles.modalContent} onPress={e => e.stopPropagation()}>
+          <View style={globalStyles.modalHeader}>
+            <Text style={globalStyles.modalTitle}>Edit Profile</Text>
+            <Pressable onPress={onClose}>
+              <Text style={globalStyles.closeButton}>✕</Text>
+            </Pressable>
+          </View>
+
+          <ScrollView style={globalStyles.modalBody} keyboardShouldPersistTaps="handled">
+            <FormInput
+              label="Name"
+              placeholder="Your name"
+              value={name}
+              onChangeText={setName}
+            />
+            <FormInput
+              label="Location"
+              placeholder="City, State"
+              value={location}
+              onChangeText={setLocation}
+            />
+            <View style={globalStyles.formField}>
+              <Text style={globalStyles.formLabel}>Bio</Text>
+              <TextInput
+                style={[globalStyles.formInput, globalStyles.formTextArea]}
+                placeholder="Tell friends about yourself"
+                value={bio}
+                onChangeText={setBio}
+                multiline
+                numberOfLines={3}
+                textAlignVertical="top"
+              />
+            </View>
+
+            <Pressable
+              style={[globalStyles.buttonPrimary, { marginTop: 20 }]}
+              onPress={handleSubmit}
+            >
+              <Text style={globalStyles.buttonPrimaryText}>Save</Text>
+            </Pressable>
+          </ScrollView>
+        </Pressable>
+      </Pressable>
+    </Modal>
+  );
+};
 
 const Bio: FC<{ text: string }> = ({ text }) => (
   <Text style={globalStyles.bodyCentered}>{text}</Text>
@@ -360,49 +445,68 @@ const ListingsGrid: FC<{ listings: Listing[] }> = ({ listings }) => {
 };
 
 export function ProfilePage(props: any) {
-  const { profile, onFriendsPress, onAddListing } = props;
-    const [modalVisible, setModalVisible] = useState(false);
-    const insets = useSafeAreaInsets();
-  
-    return (
-      <>
-        <ScrollView 
-          style={styles.container} 
-          contentContainerStyle={{ paddingBottom: 100 }}
-        >
-          <Header />
-          <ProfileInfo 
-            name={profile.name}
-            location={profile.location}
-            avatarUrl={profile.avatarUrl}
-            bio={profile.bio}
-            stats={profile.stats}
-            onFriendsPress={onFriendsPress}
-          />
-          <ListingsGrid listings={profile.listings} />
-        </ScrollView>
-        
-        <Pressable 
-          style={[
-            globalStyles.fab,
-            { 
-              bottom: 24 + insets.bottom,
-              right: 24 + insets.right,
-            }
-          ]}
-          onPress={() => setModalVisible(true)}
-        >
-          <Text style={globalStyles.fabText}>+</Text>
-        </Pressable>
-  
-        <AddListingModal 
-          visible={modalVisible} 
-          onClose={() => setModalVisible(false)} 
-          onAddListing={onAddListing}
-        />
-      </>
-    );
+  const { profile, onFriendsPress, onAddListing, onProfileSave } = props;
+  const [modalVisible, setModalVisible] = useState(false);
+  const [editProfileVisible, setEditProfileVisible] = useState(false);
+  const insets = useSafeAreaInsets();
+
+  const onSettingsPress = () => {
+    setEditProfileVisible(true);
   };
+
+  const handleProfileSave = (updatedProfile: { name: string; location: string; bio: string }) => {
+    if (onProfileSave) {
+      onProfileSave(updatedProfile);
+    }
+    setEditProfileVisible(false);
+  };
+
+  return (
+    <>
+      <ScrollView 
+        style={styles.container} 
+        contentContainerStyle={{ paddingBottom: 100 }}
+      >
+        <Header onSettingsPress={onSettingsPress} />
+        <ProfileInfo 
+          name={profile.name}
+          location={profile.location}
+          avatarUrl={profile.avatarUrl}
+          bio={profile.bio}
+          stats={profile.stats}
+          onFriendsPress={onFriendsPress}
+        />
+        <ListingsGrid listings={profile.listings} />
+      </ScrollView>
+      
+      <Pressable 
+        style={[
+          globalStyles.fab,
+          { 
+            bottom: 24 + insets.bottom,
+            right: 24 + insets.right,
+          }
+        ]}
+        onPress={() => setModalVisible(true)}
+      >
+        <Text style={globalStyles.fabText}>+</Text>
+      </Pressable>
+
+      <AddListingModal 
+        visible={modalVisible} 
+        onClose={() => setModalVisible(false)} 
+        onAddListing={onAddListing}
+      />
+
+      <EditProfileModal
+        visible={editProfileVisible}
+        profile={{ name: profile.name, location: profile.location, bio: profile.bio }}
+        onClose={() => setEditProfileVisible(false)}
+        onSave={handleProfileSave}
+      />
+    </>
+  );
+};
 
 const styles = StyleSheet.create({
   container: globalStyles.container,

@@ -33,13 +33,23 @@ function getImageSource(imageUrl: string): { uri: string } | number {
 export default function ProfileScreen() {
   const [loaded] = useFonts({ Raleway_500Medium, Raleway_700Bold });
   const router = useRouter();
+
+  const baseProfile = profileData;
+
+  const [profileInfo, setProfileInfo] = useState({
+    name: baseProfile.name,
+    location: baseProfile.location,
+    bio: baseProfile.bio,
+  });
+
   const [listings, setListings] = useState<Listing[]>(
-    profileData.listings.map(listing => ({
+    baseProfile.listings.map(listing => ({
       ...listing,
       imageUrl: getImageSource(listing.imageUrl) as any,
     }))
   );
-  const [stats, setStats] = useState(profileData.stats);
+
+  const [stats, setStats] = useState(baseProfile.stats);
 
   useEffect(() => {
     setUserListings(listings);
@@ -70,16 +80,28 @@ export default function ProfileScreen() {
     setStats(prev => ({ ...prev, items: prev.items + 1 }));
   };
 
+  const handleProfileSave = (updated: { name: string; location: string; bio: string }) => {
+    setProfileInfo(updated);
+  };
+
   const profile: Profile = {
-    ...profileData,
+    ...baseProfile,
     avatarUrl: getImageSource(profileData.avatarUrl) as any,
     listings,
     stats,
+    name: profileInfo.name,
+    location: profileInfo.location,
+    bio: profileInfo.bio,
   };
 
   return (
     <SafeAreaView style={styles.container} edges={['top']}>
-      <ProfilePage profile={profile} onFriendsPress={goToFriends} onAddListing={handleAddListing} />
+      <ProfilePage
+        profile={profile}
+        onFriendsPress={goToFriends}
+        onAddListing={handleAddListing}
+        onProfileSave={handleProfileSave}
+      />
     </SafeAreaView>
   );
 }
