@@ -40,6 +40,7 @@ export default function ProfileScreen() {
     name: baseProfile.name,
     location: baseProfile.location,
     bio: baseProfile.bio,
+    avatarUrl: getImageSource(baseProfile.avatarUrl) as any,
   });
 
   const [listings, setListings] = useState<Listing[]>(
@@ -80,13 +81,19 @@ export default function ProfileScreen() {
     setStats(prev => ({ ...prev, items: prev.items + 1 }));
   };
 
-  const handleProfileSave = (updated: { name: string; location: string; bio: string }) => {
-    setProfileInfo(updated);
+  const handleProfileSave = (updated: { name: string; location: string; bio: string; avatarUri?: string }) => {
+    setProfileInfo(prev => ({
+      ...prev,
+      name: updated.name,
+      location: updated.location,
+      bio: updated.bio,
+      avatarUrl: updated.avatarUri ? { uri: updated.avatarUri } : prev.avatarUrl,
+    }));
   };
 
   const profile: Profile = {
     ...baseProfile,
-    avatarUrl: getImageSource(profileData.avatarUrl) as any,
+    avatarUrl: profileInfo.avatarUrl,
     listings,
     stats,
     name: profileInfo.name,

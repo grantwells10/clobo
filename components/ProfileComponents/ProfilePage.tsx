@@ -281,26 +281,51 @@ const Header: FC<{ onSettingsPress: () => void }> = ({ onSettingsPress }) => (
 
 const EditProfileModal: FC<{
   visible: boolean;
-  profile: { name: string; location: string; bio: string };
+  profile: { name: string; location: string; bio: string; avatarUrl?: any };
   onClose: () => void;
-  onSave: (updated: { name: string; location: string; bio: string }) => void;
+  onSave: (updated: { name: string; location: string; bio: string; avatarUri?: string }) => void;
 }> = ({ visible, profile, onClose, onSave }) => {
   const [name, setName] = useState(profile.name);
   const [location, setLocation] = useState(profile.location);
   const [bio, setBio] = useState(profile.bio);
+  const [avatarUri, setAvatarUri] = useState<string | undefined>(
+    typeof profile.avatarUrl === 'object' && profile.avatarUrl?.uri
+      ? profile.avatarUrl.uri
+      : undefined
+  );
 
   useEffect(() => {
     setName(profile.name);
     setLocation(profile.location);
     setBio(profile.bio);
+    const uri =
+      typeof profile.avatarUrl === 'object' && profile.avatarUrl?.uri
+        ? profile.avatarUrl.uri
+        : undefined;
+    setAvatarUri(uri);
   }, [profile, visible]);
+
+  const pickAvatar = async () => {
+    const result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      allowsMultipleSelection: false,
+      allowsEditing: true,
+      aspect: [1, 1],
+      quality: 0.8,
+    });
+
+    if (!result.canceled && result.assets && result.assets.length > 0) {
+      const uri = result.assets[0].uri;
+      setAvatarUri(uri);
+    }
+  };
 
   const handleSubmit = () => {
     if (!name.trim()) {
       Alert.alert('Error', 'Please enter a name');
       return;
     }
-    onSave({ name: name.trim(), location: location.trim(), bio: bio.trim() });
+    onSave({ name: name.trim(), location: location.trim(), bio: bio.trim(), avatarUri });
     onClose();
   };
 
@@ -321,6 +346,11 @@ const EditProfileModal: FC<{
           </View>
 
           <ScrollView style={globalStyles.modalBody} keyboardShouldPersistTaps="handled">
+            <Text style={globalStyles.formLabel}>Profile Photo</Text>
+            <PhotoUploadArea
+              onPress={pickAvatar}
+              images={avatarUri ? [avatarUri] : []}
+            />
             <FormInput
               label="Name"
               placeholder="Your name"
@@ -454,7 +484,7 @@ export function ProfilePage(props: any) {
     setEditProfileVisible(true);
   };
 
-  const handleProfileSave = (updatedProfile: { name: string; location: string; bio: string }) => {
+  const handleProfileSave = (updatedProfile: { name: string; location: string; bio: string; avatarUri?: string }) => {
     if (onProfileSave) {
       onProfileSave(updatedProfile);
     }
@@ -500,7 +530,7 @@ export function ProfilePage(props: any) {
 
       <EditProfileModal
         visible={editProfileVisible}
-        profile={{ name: profile.name, location: profile.location, bio: profile.bio }}
+        profile={{ name: profile.name, location: profile.location, bio: profile.bio, avatarUrl: profile.avatarUrl, }}
         onClose={() => setEditProfileVisible(false)}
         onSave={handleProfileSave}
       />
