@@ -13,6 +13,26 @@ const profileData = require('@/data/profile.json') as Omit<Profile, 'avatarUrl' 
   listings: Array<{ id: string; imageUrl: string; alt: string }> 
 };
 
+import activitiesData from '@/data/activity.json';
+import profileData2 from '@/data/profile.json';
+
+const itemsCount = profileData2.listings.length;
+
+const lendsCount = activitiesData.filter(
+  (a) => a.activity.role === 'lending' && a.activity.status === 'current'
+).length;
+
+const borrowsCount = activitiesData.filter(
+  (a) => a.activity.role === 'borrowed' && a.activity.status === 'current'
+).length;
+
+const baseStats = {
+  ...profileData2.stats,
+  items: itemsCount,
+  lends: lendsCount,
+  borrows: borrowsCount,
+};
+
 // map JSON paths to require() calls (bundler requires static paths)
 const imageMap: Record<string, any> = {
   '../../assets/images/avatar.jpeg': require('../../assets/images/avatar.jpeg'),
@@ -50,7 +70,7 @@ export default function ProfileScreen() {
     }))
   );
 
-  const [stats, setStats] = useState(baseProfile.stats);
+  const [stats, setStats] = useState(baseStats);
 
   useEffect(() => {
     setUserListings(listings);
