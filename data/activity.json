@@ -106,5 +106,23 @@
     "washingInstructions": "Machine wash cold, gentle cycle. Tumble dry low with tennis balls.",
     "owner": { "name": "Ben Carter", "avatarUrl": "https://i.pravatar.cc/100?img=28", "mutualFriends": 2 },
     "activity": { "role": "requested", "direction": "from", "person": { "name": "James Liu", "avatarUrl": "https://i.pravatar.cc/100?img=10" }, "status": "requested", "requestedDate": "2025-10-18" }
+  },
+  {
+    "id": "puffer-jacket-hooded",
+    "brand": "Mango",
+    "title": "Hooded Puffer Jacket",
+    "category": "Outerwear",
+    "material": "Polyester",
+    "color": "Black",
+    "occasion": "Outdoor",
+    "sizes": ["S", "M", "L"],
+    "distanceKm": 8.6,
+    "popularityScore": 59,
+    "imageUrl": "https://cdn11.bigcommerce.com/s-hsi95a83fz/images/stencil/500w/products/832/11601/5590_HOODED_PUFFER_JACKET_BLACK__67204.1690761711.jpg?c=1%201000w,%20https://cdn11.bigcommerce.com/s-hsi95a83fz/images/stencil/625w/products/832/11601/5590_HOODED_PUFFER_JACKET_BLACK__67204.1690761711.jpg?c=1%201250w,%20https://cdn11.bigcommerce.com/s-hsi95a83fz/images/stencil/750w/products/832/11601/5590_HOODED_PUFFER_JACKET_BLACK__67204.1690761711.jpg?c=1%201500w,%20https://cdn11.bigcommerce.com/s-hsi95a83fz/images/stencil/875w/products/832/11601/5590_HOODED_PUFFER_JACKET_BLACK__67204.1690761711.jpg?c=1%201750w,%20https://cdn11.bigcommerce.com/s-hsi95a83fz/images/stencil/1000w/products/832/11601/5590_HOODED_PUFFER_JACKET_BLACK__67204.1690761711.jpg?c=1%202000w,%20https://cdn11.bigcommerce.com/s-hsi95a83fz/images/stencil/1250w/products/832/11601/5590_HOODED_PUFFER_JACKET_BLACK__67204.1690761711.jpg?c=1%202500w,%20https://cdn11.bigcommerce.com/s-hsi95a83fz/images/stencil/1500w/products/832/11601/5590_HOODED_PUFFER_JACKET_BLACK__67204.1690761711.jpg?c=1%203000w",
+    "sizeLabel": "Medium",
+    "description": "Warm puffer jacket with hood and side pockets.",
+    "washingInstructions": "Machine wash cold, gentle cycle. Tumble dry low with tennis balls.",
+    "owner": { "name": "You" },
+    "activity": { "role": "lending", "direction": "to", "person": { "name": "James Liu", "avatarUrl": "https://i.pravatar.cc/100?img=10" }, "status": "current", "dueDate": "2025-11-18" }
   }
 ]

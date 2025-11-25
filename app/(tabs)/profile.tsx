@@ -14,20 +14,30 @@ const profileData = require('@/data/profile.json') as Omit<Profile, 'avatarUrl' 
 };
 
 import activitiesData from '@/data/activity.json';
-import profileData2 from '@/data/profile.json';
 
-const itemsCount = profileData2.listings.length;
+const itemsCount = profileData.listings.length;
 
 const lendsCount = activitiesData.filter(
-  (a) => a.activity.role === 'lending' && a.activity.status === 'current'
+  (a) => a.owner?.name === 'You' && a.activity.role === 'lending' && a.activity.status === 'current'
 ).length;
 
 const borrowsCount = activitiesData.filter(
   (a) => a.activity.role === 'borrowed' && a.activity.status === 'current'
 ).length;
 
+const lentListingIds = new Set(
+  activitiesData
+    .filter(a => a.owner?.name === 'You' && a.activity.role === 'lending' && a.activity.status === 'current')
+    .map(a => a.id)
+);
+
+const listingsWithStatus = profileData.listings.map(listing => ({
+  ...listing,
+  isLent: lentListingIds.has(listing.id),
+}));
+
 const baseStats = {
-  ...profileData2.stats,
+  ...profileData.stats,
   items: itemsCount,
   lends: lendsCount,
   borrows: borrowsCount,
@@ -64,7 +74,7 @@ export default function ProfileScreen() {
   });
 
   const [listings, setListings] = useState<Listing[]>(
-    baseProfile.listings.map(listing => ({
+    listingsWithStatus.map(listing => ({
       ...listing,
       imageUrl: getImageSource(listing.imageUrl) as any,
     }))
@@ -93,6 +103,7 @@ export default function ProfileScreen() {
       occasion: listingData.occasion,
       description: listingData.description,
       washingInstructions: listingData.washingInstructions,
+      isLent: false,
     };
 
     const updatedListings = [...listings, newListing];

@@ -459,11 +459,18 @@ const ListingsGrid: FC<{ listings: Listing[] }> = ({ listings }) => {
               params: { id: item.id, isOwnListing: 'true' } 
             })}
           >
-            <Image 
-              source={item.imageUrl}
-              style={[globalStyles.gridImage, { width: imageWidth }]}
-              contentFit="cover"
-            />
+            <View style={{ width: imageWidth, height: imageWidth }} >
+              <Image 
+                source={item.imageUrl} 
+                style={[globalStyles.gridImage, { width: imageWidth }]}
+                contentFit="cover"
+              />
+              {item.isLent && (
+                <View style={styles.unavailableIconContainer}>
+                  <Ionicons name="lock-closed" size={16} color="#ffffff" />
+                </View>
+              )}
+            </View>
           </Pressable>
         )}
         contentContainerStyle={globalStyles.listingsGrid}
@@ -561,6 +568,17 @@ const styles = StyleSheet.create({
     height: 100,
     borderRadius: 8,
     marginBottom: 8,
+  },
+  unavailableIconContainer: {
+    position: 'absolute',
+    top: 6,
+    right: 6,
+    backgroundColor: 'rgba(0, 0, 0, 0.6)',
+    borderRadius: 10,
+    paddingHorizontal: 4,
+    paddingVertical: 2,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
 });
 

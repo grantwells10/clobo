@@ -18,6 +18,7 @@ export interface Listing {
     occasion?: string;
     description?: string;
     washingInstructions?: string;
+    isLent?: boolean;
   }
   
 export interface Profile {

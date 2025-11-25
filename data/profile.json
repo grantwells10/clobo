@@ -11,7 +11,7 @@
   },
   "listings": [
     {
-      "id": "1",
+      "id": "blue-shirt-jcrew",
       "imageUrl": "../../assets/images/item1.jpeg",
       "alt": "Blue shirt",
       "title": "Classic Blue Button-Down Shirt",
@@ -24,7 +24,7 @@
       "washingInstructions": "Machine wash cold on gentle cycle. Tumble dry low or hang to dry. Iron on medium heat if needed."
     },
     {
-      "id": "2",
+      "id": "denim-jacket",
       "imageUrl": "../../assets/images/item2.jpeg",
       "alt": "Denim jacket",
       "title": "Vintage Denim Jacket",
@@ -37,7 +37,7 @@
       "washingInstructions": "Machine wash cold, do not bleach. Tumble dry low or hang to dry. Avoid high heat."
     },
     {
-      "id": "3",
+      "id": "everlane-white-shirt",
       "imageUrl": "../../assets/images/item3.jpeg",
       "alt": "White tee",
       "title": "Essential White T-Shirt",
@@ -48,6 +48,45 @@
       "occasion": "Casual, Everyday",
       "description": "Soft, comfortable white t-shirt made from organic cotton. Perfect basic piece that goes with everything. Minimal wear.",
       "washingInstructions": "Machine wash cold with like colors. Tumble dry low or hang to dry. May need occasional bleaching to maintain whiteness."
+    },
+    {
+      "id": "puffer-jacket-hooded",
+      "imageUrl": "https://cdn11.bigcommerce.com/s-hsi95a83fz/images/stencil/500w/products/832/11601/5590_HOODED_PUFFER_JACKET_BLACK__67204.1690761711.jpg?c=1%201000w,%20https://cdn11.bigcommerce.com/s-hsi95a83fz/images/stencil/625w/products/832/11601/5590_HOODED_PUFFER_JACKET_BLACK__67204.1690761711.jpg?c=1%201250w,%20https://cdn11.bigcommerce.com/s-hsi95a83fz/images/stencil/750w/products/832/11601/5590_HOODED_PUFFER_JACKET_BLACK__67204.1690761711.jpg?c=1%201500w,%20https://cdn11.bigcommerce.com/s-hsi95a83fz/images/stencil/875w/products/832/11601/5590_HOODED_PUFFER_JACKET_BLACK__67204.1690761711.jpg?c=1%201750w,%20https://cdn11.bigcommerce.com/s-hsi95a83fz/images/stencil/1000w/products/832/11601/5590_HOODED_PUFFER_JACKET_BLACK__67204.1690761711.jpg?c=1%202000w,%20https://cdn11.bigcommerce.com/s-hsi95a83fz/images/stencil/1250w/products/832/11601/5590_HOODED_PUFFER_JACKET_BLACK__67204.1690761711.jpg?c=1%202500w,%20https://cdn11.bigcommerce.com/s-hsi95a83fz/images/stencil/1500w/products/832/11601/5590_HOODED_PUFFER_JACKET_BLACK__67204.1690761711.jpg?c=1%203000w",
+      "alt": "Black hooded puffer",
+      "title": "Hooded Puffer",
+      "brand": "Mango",
+      "sizeLabel": "Medium (US 6-8)",
+      "material": "100% Polyester",
+      "color": "Black",
+      "occasion": "Casual, Everyday",
+      "description": "Warm puffer jacket with hood and side pockets.",
+      "washingInstructions": "Machine wash cold, gentle cycle. Tumble dry low with tennis balls."
+    },
+    {
+      "id": "vintage-knit-sweater",
+      "imageUrl": "https://images.bloomingdalesassets.com/is/image/BLM/products/9/optimized/13386779_fpx.tif",
+      "alt": "White knit sweater",
+      "title": "Knit Sweater",
+      "brand": "Zadig & Voltaire",
+      "sizeLabel": "Medium (US 6-8)",
+      "material": "100% Wool",
+      "color": "Cream",
+      "occasion": "Casual, Everyday",
+      "description": "Cozy cable-knit sweater in soft wool.",
+      "washingInstructions": "Hand wash cold, lay flat to dry."
+    },
+    {
+      "id": "mango-silk-blouse",
+      "imageUrl": "https://www.mangooutlet.com/assets/rcs/pics/static/T5/fotos/S/57095985_02_B.jpg?imwidth=2048&imdensity=1&ts=1690824968022",
+      "alt": "Silk blouse",
+      "title": "Silk Blouse",
+      "brand": "Mango",
+      "sizeLabel": "Small (US 4)",
+      "material": "100% Silk",
+      "color": "Navy",
+      "occasion": "Work, Everyday",
+      "description": "Silky blouse with subtle sheen and relaxed drape.",
+      "washingInstructions": "Dry clean recommended."
     }
   ]
 }
