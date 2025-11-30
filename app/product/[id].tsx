@@ -176,8 +176,12 @@ export default function ProductDetail() {
     : (item?.imageUrl ? { uri: item.imageUrl } : null);
 
   return (
-    <SafeAreaView style={styles.safe} edges={['bottom']}> 
-      <View style={{ padding: 40 }}></View>
+    <SafeAreaView style={styles.safe}> 
+      <View style={styles.headerOverlay}>
+        <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
+          <Text style={{ fontSize: 24, fontWeight: '600', color: '#11181C' }}>←</Text>
+        </TouchableOpacity>
+      </View>
       <ScrollView contentContainerStyle={styles.container}>
         {imageSource ? (
           <Image source={imageSource} style={styles.hero} contentFit="contain" />
@@ -216,7 +220,7 @@ export default function ProductDetail() {
               ) : (
                 <View style={[styles.avatar, { backgroundColor: '#DDD' }]} />
               )}
-              <View>
+              <View style={{ flex: 1 }}>
                 <Text style={styles.ownerName}>{product.owner?.name || '—'}</Text>
                 <View style={{ gap: 2 }}>
                   {typeof product.owner?.mutualFriends === 'number' ? (
@@ -264,7 +268,7 @@ export default function ProductDetail() {
               ) : (
                 <View style={[styles.avatar, { backgroundColor: '#DDD' }]} />
               )}
-              <View>
+              <View style={{ flex: 1 }}>
                 <Text style={styles.ownerName}>{borrower.name || '—'}</Text>
                 {lendingActivity?.activity?.dueDate && (
                   <Text style={styles.muted}>
@@ -469,6 +473,24 @@ const styles = StyleSheet.create({
   modalBtnText: { fontSize: 16, fontWeight: '700', color: '#222' },
   buttonTextRequested: {
     color: '#687076',
+  },
+  headerOverlay: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    zIndex: 10,
+    paddingTop: 10,
+    paddingHorizontal: 16,
+  },
+  backButton: {
+    width: 36,
+    height: 36,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'transparent', // Removed background to match friends page
+    shadowOpacity: 0, // Removed shadow
+    elevation: 0, // Removed elevation
   },
 });
 
