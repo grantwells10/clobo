@@ -1,5 +1,5 @@
-import { getActivityItems } from '@/data/activityStore';
-import { getUserListing } from '@/data/userListings';
+import { getActivityItems, removeActivityItem } from '@/data/activityStore';
+import { getUserListing, removeUserListing } from '@/data/userListings';
 import { addUserRequest, getUserRequests, removeUserRequest } from '@/data/userRequests';
 import type { Product } from '@/types/product';
 import { Raleway_500Medium, Raleway_700Bold, useFonts } from '@expo-google-fonts/raleway';
@@ -158,6 +158,36 @@ export default function ProductDetail() {
     setContactingBorrower(null);
   }
 
+  const handleDeleteListing = () => {
+    Alert.alert(
+      'Delete Listing',
+      'Are you sure you want to delete this listing? Any pending requests will be automatically denied.',
+      [
+        {
+          text: 'Cancel',
+          style: 'cancel',
+        },
+        {
+          text: 'Delete',
+          style: 'destructive',
+          onPress: () => {
+            // Remove any activity items (requests) related to this product
+            removeActivityItem(id);
+            
+            // Remove from user listings
+            removeUserListing(id);
+            
+            // Navigate back to profile
+            if (router.canGoBack()) {
+              router.dismissAll();
+            }
+            router.replace('/(tabs)/profile');
+          },
+        },
+      ]
+    );
+  };
+
   if (!loaded) return null;
 
   if (!item) {
@@ -177,11 +207,6 @@ export default function ProductDetail() {
 
   return (
     <SafeAreaView style={styles.safe}> 
-      <View style={styles.headerOverlay}>
-        <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
-          <Text style={{ fontSize: 24, fontWeight: '600', color: '#11181C' }}>←</Text>
-        </TouchableOpacity>
-      </View>
       <ScrollView contentContainerStyle={styles.container}>
         {imageSource ? (
           <Image source={imageSource} style={styles.hero} contentFit="contain" />
@@ -292,6 +317,14 @@ export default function ProductDetail() {
               ) : null}
             </View>
           </Card>
+        )}
+
+        {isOwn && !isCurrentlyLending && (
+          <View style={{ paddingHorizontal: 16, marginTop: 24, marginBottom: 16 }}>
+            <TouchableOpacity style={styles.deleteButton} onPress={handleDeleteListing}>
+              <Text style={styles.deleteButtonText}>Delete Listing</Text>
+            </TouchableOpacity>
+          </View>
         )}
 
         <Modal
@@ -474,23 +507,19 @@ const styles = StyleSheet.create({
   buttonTextRequested: {
     color: '#687076',
   },
-  headerOverlay: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    zIndex: 10,
-    paddingTop: 10,
-    paddingHorizontal: 16,
-  },
-  backButton: {
-    width: 36,
-    height: 36,
-    justifyContent: 'center',
+  deleteButton: {
+    backgroundColor: '#fff',
+    borderWidth: 1,
+    borderColor: '#d32f2f',
+    borderRadius: 12,
+    paddingVertical: 14,
     alignItems: 'center',
-    backgroundColor: 'transparent', // Removed background to match friends page
-    shadowOpacity: 0, // Removed shadow
-    elevation: 0, // Removed elevation
+    justifyContent: 'center',
+  },
+  deleteButtonText: {
+    color: '#d32f2f',
+    fontSize: 16,
+    fontFamily: 'Raleway_700Bold',
   },
 });
 

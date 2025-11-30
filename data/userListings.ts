@@ -14,3 +14,6 @@ export function addUserListing(listing: Listing) {
   userListings.push(listing);
 }
 
+export function removeUserListing(id: string) {
+  userListings = userListings.filter(listing => listing.id !== id);
+}
