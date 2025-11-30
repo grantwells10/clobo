@@ -5,7 +5,7 @@ import { useFocusEffect } from '@react-navigation/native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { X } from 'lucide-react-native';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { Alert, FlatList, Image, Pressable, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Alert, Image, Pressable, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 const rawActivity = require('../../data/activity.json');
@@ -94,7 +94,7 @@ export default function ActivityScreen() {
 
   return (
     <SafeAreaView style={styles.container} edges={['top']}>
-      <View style={styles.scroll}>
+      <ScrollView style={styles.scroll} showsVerticalScrollIndicator={false}>
         <View style={styles.segmentWrap}>
           <TouchableOpacity onPress={() => setTab('current')} style={[styles.segmentBtn, tab === 'current' && styles.segmentActive]}>
             <Text style={[styles.segmentText, tab === 'current' && styles.segmentTextActive]}>Current</Text>
@@ -108,21 +108,21 @@ export default function ActivityScreen() {
           <View>
             <Section title="Currently Borrowing">
               {currentBorrowing.length === 0 ? <Empty text="No current borrows" /> : (
-                <FlatList
-                  data={currentBorrowing}
-                  keyExtractor={(i) => i.id}
-                  renderItem={({ item }) => <ActivityCard item={item} type="borrow" onReturn={handleReturn} />}
-                />
+                <View>
+                  {currentBorrowing.map((item) => (
+                    <ActivityCard key={item.id} item={item} type="borrow" onReturn={handleReturn} />
+                  ))}
+                </View>
               )}
             </Section>
 
             <Section title="Currently Lending">
               {currentLending.length === 0 ? <Empty text="No current lends" /> : (
-                <FlatList
-                  data={currentLending}
-                  keyExtractor={(i) => i.id}
-                  renderItem={({ item }) => <ActivityCard item={item} type="lend" />}
-                />
+                <View>
+                  {currentLending.map((item) => (
+                    <ActivityCard key={item.id} item={item} type="lend" />
+                  ))}
+                </View>
               )}
             </Section>
           </View>
@@ -130,11 +130,11 @@ export default function ActivityScreen() {
           <View>
             <Section title="Your Requests">
               {yourRequests.length === 0 ? <Empty text="No requests" /> : (
-                <FlatList
-                  data={yourRequests}
-                  keyExtractor={(i) => i.id}
-                  renderItem={({ item }) => <ActivityCard item={item} type="yourRequest" onCancelRequest={handleCancelRequest} />}
-                />
+                <View>
+                  {yourRequests.map((item) => (
+                    <ActivityCard key={item.id} item={item} type="yourRequest" onCancelRequest={handleCancelRequest} />
+                  ))}
+                </View>
               )}
             </Section>
 
@@ -142,17 +142,17 @@ export default function ActivityScreen() {
               {approveRequests.length === 0 ? (
                 <Empty text="No incoming requests" />
               ) : (
-                <FlatList
-                  data={approveRequests}
-                  keyExtractor={(i) => i.id}
-                  renderItem={({ item }) => <ActivityCard item={item} type="approveRequest" onApprove={handleApprove} onDeny={handleDeny} />}
-                />
+                <View>
+                  {approveRequests.map((item) => (
+                    <ActivityCard key={item.id} item={item} type="approveRequest" onApprove={handleApprove} onDeny={handleDeny} />
+                  ))}
+                </View>
               )}
             </Section>
           </View>
         )}
 
-      </View>
+      </ScrollView>
     </SafeAreaView>
   );
 }
