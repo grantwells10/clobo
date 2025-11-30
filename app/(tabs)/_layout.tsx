@@ -1,5 +1,5 @@
 import { Tabs } from 'expo-router';
-import { Activity, Search, User } from 'lucide-react-native';
+import { ArrowRightLeft, Search, User } from 'lucide-react-native';
 
 import { HapticTab } from '@/components/haptic-tab';
 import { Colors } from '@/styles/globalStyles';
@@ -14,8 +14,8 @@ export default function TabLayout() {
         tabBarActiveTintColor: Colors.text,
         tabBarInactiveTintColor: Colors.text,
         tabBarStyle: { backgroundColor: Colors.background },
-        // SWITCH THIS IF WE WANT TO DELETE THE WORDS BELOW THE ICONS
-        tabBarShowLabel: true,
+        // SWITCH THIS IF WE WANT TO TOGGLE THE WORDS BELOW THE ICONS
+        tabBarShowLabel: false,
         headerShown: false,
         tabBarButton: HapticTab,
       }}>
@@ -37,7 +37,7 @@ export default function TabLayout() {
         name="activity"
         options={{
           title: 'Activity',
-          tabBarIcon: ({ color, size }) => <Activity color={color} size={size ?? TAB_ICON_SIZE} />,
+          tabBarIcon: ({ color, size }) => <ArrowRightLeft color={color} size={size ?? TAB_ICON_SIZE} />,
         }}
       />
       <Tabs.Screen

@@ -4,6 +4,7 @@
   { "id": "u3", "name": "Maya Patel", "avatarUrl": "https://i.pravatar.cc/100?img=32", "phone": "+14155550303", "isFriend": true },
   { "id": "u4", "name": "James Liu", "avatarUrl": "https://i.pravatar.cc/100?img=10", "phone": "+14155550404", "isFriend": true },
   { "id": "u5", "name": "Olivia Brown", "avatarUrl": "https://i.pravatar.cc/100?img=45", "phone": "+14155550505", "isFriend": true },
+  { "id": "u16", "name": "Emma Rod", "avatarUrl": "https://i.pravatar.cc/100?img=68", "phone": "+14155550606", "isFriend": true },
   { "id": "u6", "name": "Ethan Wang", "avatarUrl": "https://i.pravatar.cc/100?img=66", "phone": "+19259225501", "isFriend": false },
   { "id": "u7", "name": "Grant Wells", "avatarUrl": "https://i.pravatar.cc/100?img=30", "phone": "+19251234567", "isFriend": true },
   { "id": "u8", "name": "Noah Martinez", "avatarUrl": "https://i.pravatar.cc/100?img=31", "phone": "+19251230002", "isFriend": false },
