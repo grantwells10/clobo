@@ -1,10 +1,12 @@
 import { ProfilePage } from '@/components/ProfileComponents/ProfilePage';
+import { getActivityItems } from '@/data/activityStore';
 import { setUserListings } from '@/data/userListings';
 import { globalStyles } from '@/styles/globalStyles';
 import type { Listing, Profile } from '@/types/profile';
 import { Raleway_500Medium, Raleway_700Bold, useFonts } from '@expo-google-fonts/raleway';
+import { useFocusEffect } from '@react-navigation/native';
 import { useRouter } from 'expo-router';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { StyleSheet } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
@@ -13,35 +15,7 @@ const profileData = require('@/data/profile.json') as Omit<Profile, 'avatarUrl' 
   listings: Array<{ id: string; imageUrl: string; alt: string }> 
 };
 
-import activitiesData from '@/data/activity.json';
-
 const itemsCount = profileData.listings.length;
-
-const lendsCount = activitiesData.filter(
-  (a) => a.owner?.name === 'You' && a.activity.role === 'lending' && a.activity.status === 'current'
-).length;
-
-const borrowsCount = activitiesData.filter(
-  (a) => a.activity.role === 'borrowed' && a.activity.status === 'current'
-).length;
-
-const lentListingIds = new Set(
-  activitiesData
-    .filter(a => a.owner?.name === 'You' && a.activity.role === 'lending' && a.activity.status === 'current')
-    .map(a => a.id)
-);
-
-const listingsWithStatus = profileData.listings.map(listing => ({
-  ...listing,
-  isLent: lentListingIds.has(listing.id),
-}));
-
-const baseStats = {
-  ...profileData.stats,
-  items: itemsCount,
-  lends: lendsCount,
-  borrows: borrowsCount,
-};
 
 // map JSON paths to require() calls (bundler requires static paths)
 const imageMap: Record<string, any> = {
@@ -74,13 +48,57 @@ export default function ProfileScreen() {
   });
 
   const [listings, setListings] = useState<Listing[]>(
-    listingsWithStatus.map(listing => ({
+    profileData.listings.map(listing => ({
       ...listing,
       imageUrl: getImageSource(listing.imageUrl) as any,
+      isLent: false,
     }))
   );
 
-  const [stats, setStats] = useState(baseStats);
+  const updateListingsAndStats = useCallback(() => {
+    const activitiesData = getActivityItems();
+    const lendsCount = activitiesData.filter(
+      (a) => a.owner?.name === 'You' && a.activity?.role === 'lending' && a.activity?.status === 'current'
+    ).length;
+    const borrowsCount = activitiesData.filter(
+      (a) => a.activity?.role === 'borrowed' && a.activity?.status === 'current'
+    ).length;
+    const lentListingIds = new Set(
+      activitiesData
+        .filter(a => a.owner?.name === 'You' && a.activity?.role === 'lending' && a.activity?.status === 'current')
+        .map(a => a.id)
+    );
+    
+    setListings(prev => prev.map(listing => ({
+      ...listing,
+      isLent: lentListingIds.has(listing.id),
+    })));
+    
+    setStats(prev => ({
+      ...prev,
+      lends: lendsCount,
+      borrows: borrowsCount,
+    }));
+  }, []);
+
+  const [stats, setStats] = useState({
+    ...profileData.stats,
+    items: itemsCount,
+    lends: 0,
+    borrows: 0,
+  });
+
+  // Initial load
+  useEffect(() => {
+    updateListingsAndStats();
+  }, [updateListingsAndStats]);
+
+  // Refresh when screen comes into focus
+  useFocusEffect(
+    useCallback(() => {
+      updateListingsAndStats();
+    }, [updateListingsAndStats])
+  );
 
   useEffect(() => {
     setUserListings(listings);

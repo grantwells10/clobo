@@ -33,24 +33,6 @@
     "description": "Cozy cable-knit sweater in soft wool.",
     "washingInstructions": "Hand wash cold, lay flat to dry.",
     "owner": { "name": "You" },
-    "activity": { "role": "lending", "direction": "to", "person": { "name": "Alex Chen", "avatarUrl": "https://i.pravatar.cc/100?img=5" }, "status": "current", "dueDate": "2025-10-28" }
-  },
-  {
-    "id": "vintage-knit-sweater",
-    "brand": "Zadig & Voltaire",
-    "title": "Knit Sweater",
-    "category": "Knitwear",
-    "material": "Wool",
-    "color": "Cream",
-    "occasion": "Casual",
-    "sizes": ["S", "M", "L"],
-    "distanceKm": 1.4,
-    "popularityScore": 68,
-    "imageUrl": "https://images.bloomingdalesassets.com/is/image/BLM/products/9/optimized/13386779_fpx.tif",
-    "sizeLabel": "Medium",
-    "description": "Cozy cable-knit sweater in soft wool.",
-    "washingInstructions": "Hand wash cold, lay flat to dry.",
-    "owner": { "name": "You" },
     "activity": { "role": "requested", "direction": "from", "person": { "name": "James Liu", "avatarUrl": "https://i.pravatar.cc/100?img=10" }, "status": "requested", "requestedDate": "2025-10-20" }
   },
   {

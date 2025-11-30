@@ -1,3 +1,4 @@
+import { getActivityItems } from '@/data/activityStore';
 import { getUserListing } from '@/data/userListings';
 import { addUserRequest, getUserRequests, removeUserRequest } from '@/data/userRequests';
 import type { Product } from '@/types/product';
@@ -15,6 +16,7 @@ export const options = {
 };
 
 const products = require('@/data/products.json') as Product[];
+const users = require('@/data/users.json') as Array<{ name: string; phone?: string; avatarUrl?: string }>;
 
 export default function ProductDetail() {
   const { id, isOwnListing, isBorrowing } = useLocalSearchParams<{ id: string; isOwnListing?: string; isBorrowing?: string }>();
@@ -30,6 +32,18 @@ export default function ProductDetail() {
   const product = products.find((p) => p.id === id) || null;
   // Also check if product owner is "You" to hide lender info
   const isOwnedByUser = product?.owner?.name === 'You' || isOwn;
+  
+  // Check if this item is being lent (has activity with role 'lending' and status 'current')
+  const activityItems = getActivityItems();
+  const lendingActivity = activityItems.find(
+    (a) => a.id === id && a.owner?.name === 'You' && a.activity?.role === 'lending' && a.activity?.status === 'current'
+  );
+  const isCurrentlyLending = !!lendingActivity;
+  const borrower = lendingActivity?.activity?.person;
+  
+  // Look up borrower's phone number from users
+  const borrowerUser = borrower ? users.find(u => u.name === borrower.name) : null;
+  const borrowerPhone = borrowerUser?.phone;
 
   // Check if product is already requested
   const checkIfRequested = useCallback(() => {
@@ -105,8 +119,12 @@ export default function ProductDetail() {
     name: string;
     phone: string;
   } | null>(null);
+  const [contactingBorrower, setContactingBorrower] = useState<{
+    name: string;
+    phone: string;
+  } | null>(null);
 
-  function contactOwner(phone: string, method: 'imessage' | 'sms' | 'whatsapp') {
+  function contactPerson(phone: string, method: 'imessage' | 'sms' | 'whatsapp') {
     const digits = phone.replace(/\D/g, '');
     let url = '';
     if (method === 'imessage' || method === 'sms') {
@@ -119,16 +137,25 @@ export default function ProductDetail() {
         ? Linking.openURL(url)
         : Alert.alert(method === 'whatsapp' ? 'WhatsApp not installed' : 'Messages app not found')
       )
-      .catch(() => Alert.alert('Error', 'Unable to contact lender.'));
+      .catch(() => Alert.alert('Error', 'Unable to contact person.'));
   }
 
   function showContactModal(owner: { name: string, phone: string }) {
     setContactingOwner(owner);
+    setContactingBorrower(null);
     setModalVisible(true);
   }
+  
+  function showBorrowerContactModal(borrower: { name: string, phone: string }) {
+    setContactingBorrower(borrower);
+    setContactingOwner(null);
+    setModalVisible(true);
+  }
+  
   function closeContactModal() {
     setModalVisible(false);
     setContactingOwner(null);
+    setContactingBorrower(null);
   }
 
   if (!loaded) return null;
@@ -228,6 +255,41 @@ export default function ProductDetail() {
           </Card>
         )}
 
+        {isCurrentlyLending && borrower && (
+          <Card>
+            <Text style={styles.sectionTitle}>Borrower Info</Text>
+            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12, marginTop: 12 }}>
+              {borrower.avatarUrl ? (
+                <Image source={{ uri: borrower.avatarUrl }} style={styles.avatar} contentFit="cover" />
+              ) : (
+                <View style={[styles.avatar, { backgroundColor: '#DDD' }]} />
+              )}
+              <View>
+                <Text style={styles.ownerName}>{borrower.name || '—'}</Text>
+                {lendingActivity?.activity?.dueDate && (
+                  <Text style={styles.muted}>
+                    Return by: {new Date(lendingActivity.activity.dueDate).toLocaleDateString(undefined, { 
+                      year: 'numeric', 
+                      month: 'short', 
+                      day: 'numeric' 
+                    })}
+                  </Text>
+                )}
+              </View>
+              {borrowerPhone ? (
+                <TouchableOpacity
+                  style={styles.iconButton}
+                  onPress={() =>
+                    showBorrowerContactModal({ name: borrower.name, phone: borrowerPhone })
+                  }
+                >
+                  <FontAwesome name="comment" size={24} color="#555" />
+                </TouchableOpacity>
+              ) : null}
+            </View>
+          </Card>
+        )}
+
         <Modal
           visible={modalVisible}
           transparent
@@ -240,10 +302,25 @@ export default function ProductDetail() {
                 <>
                   <Text style={[styles.ownerName, { fontSize: 18, marginBottom: 6 }]}>Contact {contactingOwner.name}</Text>
                   <Text style={styles.muted}>{contactingOwner.phone}</Text>
-                  <TouchableOpacity style={styles.modalBtn} onPress={() => { contactOwner(contactingOwner.phone, 'imessage'); closeContactModal(); }}>
+                  <TouchableOpacity style={styles.modalBtn} onPress={() => { contactPerson(contactingOwner.phone, 'imessage'); closeContactModal(); }}>
                     <Text style={styles.modalBtnText}>Message (iMessage/SMS)</Text>
                   </TouchableOpacity>
-                  <TouchableOpacity style={styles.modalBtn} onPress={() => { contactOwner(contactingOwner.phone, 'whatsapp'); closeContactModal(); }}>
+                  <TouchableOpacity style={styles.modalBtn} onPress={() => { contactPerson(contactingOwner.phone, 'whatsapp'); closeContactModal(); }}>
+                    <Text style={styles.modalBtnText}>WhatsApp</Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity style={styles.modalBtn} onPress={closeContactModal}>
+                    <Text style={[styles.modalBtnText, { color: 'red' }]}>Cancel</Text>
+                  </TouchableOpacity>
+                </>
+              )}
+              {contactingBorrower && (
+                <>
+                  <Text style={[styles.ownerName, { fontSize: 18, marginBottom: 6 }]}>Contact {contactingBorrower.name}</Text>
+                  <Text style={styles.muted}>{contactingBorrower.phone}</Text>
+                  <TouchableOpacity style={styles.modalBtn} onPress={() => { contactPerson(contactingBorrower.phone, 'imessage'); closeContactModal(); }}>
+                    <Text style={styles.modalBtnText}>Message (iMessage/SMS)</Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity style={styles.modalBtn} onPress={() => { contactPerson(contactingBorrower.phone, 'whatsapp'); closeContactModal(); }}>
                     <Text style={styles.modalBtnText}>WhatsApp</Text>
                   </TouchableOpacity>
                   <TouchableOpacity style={styles.modalBtn} onPress={closeContactModal}>
