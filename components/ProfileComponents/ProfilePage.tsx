@@ -5,7 +5,7 @@ import { Image } from 'expo-image';
 import * as ImagePicker from 'expo-image-picker';
 import { useRouter } from 'expo-router';
 import { FC, useEffect, useState } from 'react';
-import { Alert, Dimensions, FlatList, Keyboard, Modal, Pressable, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { Alert, Dimensions, FlatList, Keyboard, KeyboardAvoidingView, Modal, Platform, Pressable, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 const screenWidth = Dimensions.get('window').width;
@@ -138,133 +138,140 @@ const AddListingModal: FC<{ visible: boolean; onClose: () => void; onAddListing?
               }
             }}
           >
-            <Pressable style={globalStyles.modalContent} onPress={(e) => e.stopPropagation()}>
-              <View style={globalStyles.modalHeader}>
-                <Text style={globalStyles.modalTitle}>Add New Listing</Text>
-                <Pressable onPress={handleClose}>
-                  <Text style={globalStyles.closeButton}>✕</Text>
-                </Pressable>
-              </View>
-              
-              <Text style={globalStyles.modalSubtitle}>Share an item from your closet with friends</Text>
-              
-              <ScrollView 
-                style={globalStyles.modalBody}
-                contentContainerStyle={{ paddingBottom: insets.bottom + 20 }}
-                keyboardShouldPersistTaps="handled"
-                onScrollBeginDrag={() => {
-                  Keyboard.dismiss();
-                  setSizeDropdownOpen(false);
-                }}
-              >
-                <Text style={globalStyles.formLabel}>Photo</Text>
-                <PhotoUploadArea onPress={pickImages} images={images} />
+            <KeyboardAvoidingView
+              style={{ flex: 1, width: '100%', justifyContent: 'center', alignItems: 'center' }}
+              behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+              keyboardVerticalOffset={insets.top}
+            >
+              <Pressable style={[globalStyles.modalContent, { maxHeight: '90%' }]} onPress={(e) => e.stopPropagation()}>
+                <View style={globalStyles.modalHeader}>
+                  <Text style={globalStyles.modalTitle}>Add New Listing</Text>
+                  <Pressable onPress={handleClose}>
+                    <Text style={globalStyles.closeButton}>✕</Text>
+                  </Pressable>
+                </View>
                 
-                <FormInput 
-                  label="Item Name" 
-                  placeholder="e.g., Summer Midi Dress"
-                  value={itemName}
-                  onChangeText={setItemName}
-                />
-                <FormInput 
-                  label="Brand" 
-                  placeholder="e.g., Zara"
-                  value={brand}
-                  onChangeText={setBrand}
-                />
+                <Text style={globalStyles.modalSubtitle}>Share an item from your closet with friends</Text>
                 
-                <View style={globalStyles.formField}>
-                  <Text style={globalStyles.formLabel}>Size</Text>
-                  <View style={styles.dropdownContainer}>
-                    <Pressable 
-                      style={globalStyles.selectInput}
-                      onPress={() => {
-                        Keyboard.dismiss();
-                        setSizeDropdownOpen(!sizeDropdownOpen);
-                      }}
-                    >
-                      <Text style={[globalStyles.selectInputText, size ? { color: Colors.text } : { color: Colors.textMutedLight }]}>
-                        {size || 'Select size'}
-                      </Text>
-                    </Pressable>
-                    {sizeDropdownOpen && (
-                      <>
-                        <Pressable 
-                          style={styles.dropdownOverlay}
-                          onPress={() => setSizeDropdownOpen(false)}
-                        />
-                        <View style={globalStyles.dropdown}>
-                          {SIZE_OPTIONS.map((option) => (
-                            <Pressable
-                              key={option}
-                              style={globalStyles.dropdownItem}
-                              onPress={() => {
-                                setSize(option);
-                                setSizeDropdownOpen(false);
-                              }}
-                            >
-                              <Text style={globalStyles.dropdownItemText}>{option}</Text>
-                              {size === option && <Text style={globalStyles.checkmark}>✓</Text>}
-                            </Pressable>
-                          ))}
-                        </View>
-                      </>
-                    )}
+                <ScrollView 
+                  style={globalStyles.modalBody}
+                  contentContainerStyle={{ paddingBottom: insets.bottom + 24 }}
+                  keyboardShouldPersistTaps="handled"
+                  // onScrollBeginDrag={() => {
+                  //   Keyboard.dismiss();
+                  //   setSizeDropdownOpen(false);
+                  // }}
+                  showsVerticalScrollIndicator={false}
+                >
+                  <Text style={globalStyles.formLabel}>Photo</Text>
+                  <PhotoUploadArea onPress={pickImages} images={images} />
+                  
+                  <FormInput 
+                    label="Item Name" 
+                    placeholder="e.g., Summer Midi Dress"
+                    value={itemName}
+                    onChangeText={setItemName}
+                  />
+                  <FormInput 
+                    label="Brand" 
+                    placeholder="e.g., Zara"
+                    value={brand}
+                    onChangeText={setBrand}
+                  />
+                  
+                  <View style={globalStyles.formField}>
+                    <Text style={globalStyles.formLabel}>Size</Text>
+                    <View style={styles.dropdownContainer}>
+                      <Pressable 
+                        style={globalStyles.selectInput}
+                        onPress={() => {
+                          Keyboard.dismiss();
+                          setSizeDropdownOpen(!sizeDropdownOpen);
+                        }}
+                      >
+                        <Text style={[globalStyles.selectInputText, size ? { color: Colors.text } : { color: Colors.textMutedLight }]}>
+                          {size || 'Select size'}
+                        </Text>
+                      </Pressable>
+                      {sizeDropdownOpen && (
+                        <>
+                          <Pressable 
+                            style={styles.dropdownOverlay}
+                            onPress={() => setSizeDropdownOpen(false)}
+                          />
+                          <View style={globalStyles.dropdown}>
+                            {SIZE_OPTIONS.map((option) => (
+                              <Pressable
+                                key={option}
+                                style={globalStyles.dropdownItem}
+                                onPress={() => {
+                                  setSize(option);
+                                  setSizeDropdownOpen(false);
+                                }}
+                              >
+                                <Text style={globalStyles.dropdownItemText}>{option}</Text>
+                                {size === option && <Text style={globalStyles.checkmark}>✓</Text>}
+                              </Pressable>
+                            ))}
+                          </View>
+                        </>
+                      )}
+                    </View>
                   </View>
-                </View>
-                
-                <FormInput 
-                  label="Material" 
-                  placeholder="e.g., 100% Cotton"
-                  value={material}
-                  onChangeText={setMaterial}
-                />
-                <FormInput 
-                  label="Color" 
-                  placeholder="e.g., Navy Blue"
-                  value={color}
-                  onChangeText={setColor}
-                />
-                <FormInput 
-                  label="Occasion" 
-                  placeholder="e.g., Casual, Brunch"
-                  value={occasion}
-                  onChangeText={setOccasion}
-                />
-                
-                <View style={globalStyles.formField}>
-                  <Text style={globalStyles.formLabel}>Description</Text>
-                  <TextInput 
-                    style={[globalStyles.formInput, globalStyles.formTextArea]}
-                    placeholder="Describe the item..."
-                    placeholderTextColor={Colors.textMutedLight}
-                    value={description}
-                    onChangeText={setDescription}
-                    multiline
-                    numberOfLines={4}
-                    textAlignVertical="top"
+                  
+                  <FormInput 
+                    label="Material" 
+                    placeholder="e.g., 100% Cotton"
+                    value={material}
+                    onChangeText={setMaterial}
                   />
-                </View>
-                
-                <View style={globalStyles.formField}>
-                  <Text style={globalStyles.formLabel}>Washing Instructions</Text>
-                  <TextInput 
-                    style={[globalStyles.formInput, globalStyles.formTextArea]}
-                    placeholder="e.g., Machine wash cold, hang to dry"
-                    placeholderTextColor={Colors.textMutedLight}
-                    value={washingInstructions}
-                    onChangeText={setWashingInstructions}
-                    multiline
-                    numberOfLines={3}
-                    textAlignVertical="top"
+                  <FormInput 
+                    label="Color" 
+                    placeholder="e.g., Navy Blue"
+                    value={color}
+                    onChangeText={setColor}
                   />
-                </View>
-                
-                <Pressable style={[globalStyles.buttonPrimary, { marginTop: 20, marginBottom: 16 }]} onPress={handleSubmit}>
-                  <Text style={globalStyles.buttonPrimaryText}>Add Listing</Text>
-                </Pressable>
-              </ScrollView>
-            </Pressable>
+                  <FormInput 
+                    label="Occasion" 
+                    placeholder="e.g., Casual, Brunch"
+                    value={occasion}
+                    onChangeText={setOccasion}
+                  />
+                  
+                  <View style={globalStyles.formField}>
+                    <Text style={globalStyles.formLabel}>Description</Text>
+                    <TextInput 
+                      style={[globalStyles.formInput, globalStyles.formTextArea]}
+                      placeholder="Describe the item..."
+                      placeholderTextColor={Colors.textMutedLight}
+                      value={description}
+                      onChangeText={setDescription}
+                      multiline
+                      numberOfLines={4}
+                      textAlignVertical="top"
+                    />
+                  </View>
+                  
+                  <View style={globalStyles.formField}>
+                    <Text style={globalStyles.formLabel}>Washing Instructions</Text>
+                    <TextInput 
+                      style={[globalStyles.formInput, globalStyles.formTextArea]}
+                      placeholder="e.g., Machine wash cold, hang to dry"
+                      placeholderTextColor={Colors.textMutedLight}
+                      value={washingInstructions}
+                      onChangeText={setWashingInstructions}
+                      multiline
+                      numberOfLines={3}
+                      textAlignVertical="top"
+                    />
+                  </View>
+                  
+                  <Pressable style={[globalStyles.buttonPrimary, { marginTop: 20, marginBottom: 16 }]} onPress={handleSubmit}>
+                    <Text style={globalStyles.buttonPrimaryText}>Add Listing</Text>
+                  </Pressable>
+                </ScrollView>
+              </Pressable>
+            </KeyboardAvoidingView>
           </Pressable>
         </Modal>
     );
@@ -293,6 +300,7 @@ const EditProfileModal: FC<{
       ? profile.avatarUrl.uri
       : undefined
   );
+  const insets = useSafeAreaInsets();
 
   useEffect(() => {
     setName(profile.name);
@@ -337,53 +345,64 @@ const EditProfileModal: FC<{
           if (e.target === e.currentTarget) onClose();
         }}
       >
-        <Pressable style={globalStyles.modalContent} onPress={e => e.stopPropagation()}>
-          <View style={globalStyles.modalHeader}>
-            <Text style={globalStyles.modalTitle}>Edit Profile</Text>
-            <Pressable onPress={onClose}>
-              <Text style={globalStyles.closeButton}>✕</Text>
-            </Pressable>
-          </View>
-
-          <ScrollView style={globalStyles.modalBody} keyboardShouldPersistTaps="handled">
-            <Text style={globalStyles.formLabel}>Profile Photo</Text>
-            <PhotoUploadArea
-              onPress={pickAvatar}
-              images={avatarUri ? [avatarUri] : []}
-            />
-            <FormInput
-              label="Name"
-              placeholder="Your name"
-              value={name}
-              onChangeText={setName}
-            />
-            <FormInput
-              label="Location"
-              placeholder="City, State"
-              value={location}
-              onChangeText={setLocation}
-            />
-            <View style={globalStyles.formField}>
-              <Text style={globalStyles.formLabel}>Bio</Text>
-              <TextInput
-                style={[globalStyles.formInput, globalStyles.formTextArea]}
-                placeholder="Tell friends about yourself"
-                value={bio}
-                onChangeText={setBio}
-                multiline
-                numberOfLines={3}
-                textAlignVertical="top"
-              />
+        <KeyboardAvoidingView
+          style={{ flex: 1, width: '100%', justifyContent: 'center', alignItems: 'center' }}
+          behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+          keyboardVerticalOffset={insets.top}
+        >
+          <Pressable style={globalStyles.modalContent} onPress={e => e.stopPropagation()}>
+            <View style={globalStyles.modalHeader}>
+              <Text style={globalStyles.modalTitle}>Edit Profile</Text>
+              <Pressable onPress={onClose}>
+                <Text style={globalStyles.closeButton}>✕</Text>
+              </Pressable>
             </View>
 
-            <Pressable
-              style={[globalStyles.buttonPrimary, { marginTop: 20 }]}
-              onPress={handleSubmit}
-            >
-              <Text style={globalStyles.buttonPrimaryText}>Save</Text>
-            </Pressable>
-          </ScrollView>
-        </Pressable>
+            <ScrollView
+              style={globalStyles.modalBody} 
+              contentContainerStyle={{ paddingBottom: insets.bottom + 15 }}
+              keyboardShouldPersistTaps="handled"
+              showsVerticalScrollIndicator={false}
+              >
+              <Text style={globalStyles.formLabel}>Profile Photo</Text>
+              <PhotoUploadArea
+                onPress={pickAvatar}
+                images={avatarUri ? [avatarUri] : []}
+              />
+              <FormInput
+                label="Name"
+                placeholder="Your name"
+                value={name}
+                onChangeText={setName}
+              />
+              <FormInput
+                label="Location"
+                placeholder="City, State"
+                value={location}
+                onChangeText={setLocation}
+              />
+              <View style={globalStyles.formField}>
+                <Text style={globalStyles.formLabel}>Bio</Text>
+                <TextInput
+                  style={[globalStyles.formInput, globalStyles.formTextArea]}
+                  placeholder="Tell friends about yourself"
+                  value={bio}
+                  onChangeText={setBio}
+                  multiline
+                  numberOfLines={3}
+                  textAlignVertical="top"
+                />
+              </View>
+
+              <Pressable
+                style={[globalStyles.buttonPrimary, { marginTop: 20 }]}
+                onPress={handleSubmit}
+              >
+                <Text style={globalStyles.buttonPrimaryText}>Save</Text>
+              </Pressable>
+            </ScrollView>
+          </Pressable>
+        </KeyboardAvoidingView>
       </Pressable>
     </Modal>
   );
