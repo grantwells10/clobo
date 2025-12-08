@@ -1,6 +1,6 @@
 import { ProfilePage } from '@/components/ProfileComponents/ProfilePage';
 import { getActivityItems } from '@/data/activityStore';
-import { setUserListings } from '@/data/userListings';
+import { getUserListings, setUserListings } from '@/data/userListings';
 import usersStore from '@/data/usersStore';
 import { globalStyles } from '@/styles/globalStyles';
 import type { Listing, Profile } from '@/types/profile';
@@ -48,13 +48,19 @@ export default function ProfileScreen() {
     avatarUrl: getImageSource(baseProfile.avatarUrl) as any,
   });
 
-  const [listings, setListings] = useState<Listing[]>(
-    profileData.listings.map(listing => ({
+  const [listings, setListings] = useState<Listing[]>(() => {
+    const currentStore = getUserListings();
+    if (currentStore.length > 0) {
+      return currentStore;
+    }
+    const initial = profileData.listings.map(listing => ({
       ...listing,
       imageUrl: getImageSource(listing.imageUrl) as any,
       isLent: false,
-    }))
-  );
+    }));
+    setUserListings(initial);
+    return initial;
+  });
 
   const updateListingsAndStats = useCallback(() => {
     const activitiesData = getActivityItems();

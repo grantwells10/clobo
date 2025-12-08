@@ -2,6 +2,10 @@ import type { Listing } from '@/types/profile';
 
 let userListings: Listing[] = [];
 
+export function getUserListings(): Listing[] {
+  return userListings;
+}
+
 export function getUserListing(id: string): Listing | undefined {
   return userListings.find(listing => listing.id === id);
 }
