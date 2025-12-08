@@ -6,13 +6,13 @@ import { Raleway_500Medium, Raleway_700Bold, useFonts } from '@expo-google-fonts
 import { useFocusEffect } from '@react-navigation/native';
 import { Image } from 'expo-image';
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import { MessageCircle } from 'lucide-react-native';
+import { ChevronLeft, MessageCircle } from 'lucide-react-native';
 import React, { useCallback, useEffect, useState } from 'react';
 import { Alert, Linking, Modal, Pressable, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 export const options = {
-  headerShown: true,
+  headerShown: false,
 };
 
 const products = require('@/data/products.json') as Product[];
@@ -197,133 +197,138 @@ export default function ProductDetail() {
 
   return (
     <SafeAreaView style={styles.safe}> 
-      <ScrollView contentContainerStyle={styles.container}>
-        {imageSource ? (
-          <Image source={imageSource} style={styles.hero} contentFit="contain" />
-        ) : (
-          <View style={[styles.hero, { backgroundColor: '#EEE' }]} />
-        )}
+      <View style={{ flex: 1 }}>
+        <ScrollView contentContainerStyle={styles.container}>
+          {imageSource ? (
+            <Image source={imageSource} style={styles.hero} contentFit="contain" />
+          ) : (
+            <View style={[styles.hero, { backgroundColor: '#EEE' }]} />
+          )}
 
-        <View style={{ paddingHorizontal: 16, paddingTop: 16 }}>
-          <Text style={styles.title}>{item.title}</Text>
-          <Text style={styles.brand}>{item.brand}</Text>
-        </View>
-
-        <Card>
-          <Row label="Size" value={item.sizeLabel ?? (item.sizes?.join(', ') || '—')} />
-          <Row label="Material" value={item.material || '—'} />
-          <Row label="Color" value={item.color || '—'} />
-          <Row label="Occasion" value={item.occasion || '—'} />
-        </Card>
-
-        <Card>
-          <Text style={styles.sectionTitle}>Description</Text>
-          <Text style={styles.body}>{item.description || '—'}</Text>
-        </Card>
-
-        <Card>
-          <Text style={styles.sectionTitle}>Washing Instructions</Text>
-          <Text style={styles.body}>{item.washingInstructions || '—'}</Text>
-        </Card>
-
-        {!isOwnedByUser && product && (
-          <Card>
-            <Text style={styles.sectionTitle}>Lender Info</Text>
-            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12, marginTop: 12 }}>
-              {product.owner?.avatarUrl ? (
-                <Image source={{ uri: product.owner.avatarUrl }} style={styles.avatar} contentFit="cover" />
-              ) : (
-                <View style={[styles.avatar, { backgroundColor: '#DDD' }]} />
-              )}
-              <View style={{ flex: 1 }}>
-                <Text style={styles.ownerName}>{product.owner?.name || '—'}</Text>
-                <View style={{ gap: 2 }}>
-                  {typeof product.owner?.mutualFriends === 'number' ? (
-                    <Text style={styles.muted}>{product.owner.mutualFriends} mutual friends</Text>
-                  ) : null}
-                  {typeof product.distanceKm === 'number' ? (
-                    <Text style={styles.muted}>{product.distanceKm.toFixed(1)} km away</Text>
-                  ) : null}
-                </View>
-              </View>
-              {product.owner?.phone ? (
-                <TouchableOpacity
-                  style={styles.iconButton}
-                  onPress={() =>
-                    showContactOptions(product.owner!.name, product.owner!.phone!)
-                  }
-                >
-                  <MessageCircle size={24} color="#555" />
-                </TouchableOpacity>
-              ) : null}
-            </View>
-            {!isCurrentlyBorrowing && (
-              <Pressable 
-                style={[
-                  styles.button, 
-                  { marginTop: 16 },
-                  isRequested && styles.buttonRequested
-                ]} 
-                onPress={handleRequestToBorrow}
-              >
-                <Text style={[styles.buttonText, isRequested && styles.buttonTextRequested]}>
-                  {isRequested ? 'Cancel Request' : 'Request to Borrow'}
-                </Text>
-              </Pressable>
-            )}
-          </Card>
-        )}
-
-        {isCurrentlyLending && borrower && (
-          <Card>
-            <Text style={styles.sectionTitle}>Borrower Info</Text>
-            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12, marginTop: 12 }}>
-              {borrower.avatarUrl ? (
-                <Image source={{ uri: borrower.avatarUrl }} style={styles.avatar} contentFit="cover" />
-              ) : (
-                <View style={[styles.avatar, { backgroundColor: '#DDD' }]} />
-              )}
-              <View style={{ flex: 1 }}>
-                <Text style={styles.ownerName}>{borrower.name || '—'}</Text>
-                {lendingActivity?.activity?.dueDate && (
-                  <Text style={styles.muted}>
-                    Return by: {new Date(lendingActivity.activity.dueDate).toLocaleDateString(undefined, { 
-                      year: 'numeric', 
-                      month: 'short', 
-                      day: 'numeric' 
-                    })}
-                  </Text>
-                )}
-              </View>
-              {borrowerPhone ? (
-                <TouchableOpacity
-                  style={styles.iconButton}
-                  onPress={() =>
-                    showContactOptions(borrower.name, borrowerPhone)
-                  }
-                >
-                  <MessageCircle size={24} color="#555" />
-                </TouchableOpacity>
-              ) : null}
-            </View>
-          </Card>
-        )}
-
-        {isOwn && !isCurrentlyLending && (
-          <View style={{ paddingHorizontal: 16, marginTop: 24, marginBottom: 16 }}>
-            <TouchableOpacity style={styles.deleteButton} onPress={handleDeleteListing}>
-              <Text style={styles.deleteButtonText}>Delete Listing</Text>
-            </TouchableOpacity>
+          <View style={{ paddingHorizontal: 16, paddingTop: 16 }}>
+            <Text style={styles.title}>{item.title}</Text>
+            <Text style={styles.brand}>{item.brand}</Text>
           </View>
-        )}
 
-        <Modal
-          visible={false} // Modal logic removed in favor of Alert
-          transparent
-          animationType="slide"
-        >
-        </Modal>
-      </ScrollView>
+          <Card>
+            <Row label="Size" value={item.sizeLabel ?? (item.sizes?.join(', ') || '—')} />
+            <Row label="Material" value={item.material || '—'} />
+            <Row label="Color" value={item.color || '—'} />
+            <Row label="Occasion" value={item.occasion || '—'} />
+          </Card>
+
+          <Card>
+            <Text style={styles.sectionTitle}>Description</Text>
+            <Text style={styles.body}>{item.description || '—'}</Text>
+          </Card>
+
+          <Card>
+            <Text style={styles.sectionTitle}>Washing Instructions</Text>
+            <Text style={styles.body}>{item.washingInstructions || '—'}</Text>
+          </Card>
+
+          {!isOwnedByUser && product && (
+            <Card>
+              <Text style={styles.sectionTitle}>Lender Info</Text>
+              <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12, marginTop: 12 }}>
+                {product.owner?.avatarUrl ? (
+                  <Image source={{ uri: product.owner.avatarUrl }} style={styles.avatar} contentFit="cover" />
+                ) : (
+                  <View style={[styles.avatar, { backgroundColor: '#DDD' }]} />
+                )}
+                <View style={{ flex: 1 }}>
+                  <Text style={styles.ownerName}>{product.owner?.name || '—'}</Text>
+                  <View style={{ gap: 2 }}>
+                    {typeof product.owner?.mutualFriends === 'number' ? (
+                      <Text style={styles.muted}>{product.owner.mutualFriends} mutual friends</Text>
+                    ) : null}
+                    {typeof product.distanceKm === 'number' ? (
+                      <Text style={styles.muted}>{product.distanceKm.toFixed(1)} km away</Text>
+                    ) : null}
+                  </View>
+                </View>
+                {product.owner?.phone ? (
+                  <TouchableOpacity
+                    style={styles.iconButton}
+                    onPress={() =>
+                      showContactOptions(product.owner!.name, product.owner!.phone!)
+                    }
+                  >
+                    <MessageCircle size={24} color="#555" />
+                  </TouchableOpacity>
+                ) : null}
+              </View>
+              {!isCurrentlyBorrowing && (
+                <Pressable 
+                  style={[
+                    styles.button, 
+                    { marginTop: 16 },
+                    isRequested && styles.buttonRequested
+                  ]} 
+                  onPress={handleRequestToBorrow}
+                >
+                  <Text style={[styles.buttonText, isRequested && styles.buttonTextRequested]}>
+                    {isRequested ? 'Cancel Request' : 'Request to Borrow'}
+                  </Text>
+                </Pressable>
+              )}
+            </Card>
+          )}
+
+          {isCurrentlyLending && borrower && (
+            <Card>
+              <Text style={styles.sectionTitle}>Borrower Info</Text>
+              <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12, marginTop: 12 }}>
+                {borrower.avatarUrl ? (
+                  <Image source={{ uri: borrower.avatarUrl }} style={styles.avatar} contentFit="cover" />
+                ) : (
+                  <View style={[styles.avatar, { backgroundColor: '#DDD' }]} />
+                )}
+                <View style={{ flex: 1 }}>
+                  <Text style={styles.ownerName}>{borrower.name || '—'}</Text>
+                  {lendingActivity?.activity?.dueDate && (
+                    <Text style={styles.muted}>
+                      Return by: {new Date(lendingActivity.activity.dueDate).toLocaleDateString(undefined, { 
+                        year: 'numeric', 
+                        month: 'short', 
+                        day: 'numeric' 
+                      })}
+                    </Text>
+                  )}
+                </View>
+                {borrowerPhone ? (
+                  <TouchableOpacity
+                    style={styles.iconButton}
+                    onPress={() =>
+                      showContactOptions(borrower.name, borrowerPhone)
+                    }
+                  >
+                    <MessageCircle size={24} color="#555" />
+                  </TouchableOpacity>
+                ) : null}
+              </View>
+            </Card>
+          )}
+
+          {isOwn && !isCurrentlyLending && (
+            <View style={{ paddingHorizontal: 16, marginTop: 24, marginBottom: 16 }}>
+              <TouchableOpacity style={styles.deleteButton} onPress={handleDeleteListing}>
+                <Text style={styles.deleteButtonText}>Delete Listing</Text>
+              </TouchableOpacity>
+            </View>
+          )}
+
+          <Modal
+            visible={false} // Modal logic removed in favor of Alert
+            transparent
+            animationType="slide"
+          >
+          </Modal>
+        </ScrollView>
+        <TouchableOpacity style={styles.backButton} onPress={() => router.back()}>
+          <ChevronLeft size={24} color="#11181C" />
+        </TouchableOpacity>
+      </View>
     </SafeAreaView>
   );
 }
@@ -473,6 +478,16 @@ const styles = StyleSheet.create({
     color: '#d32f2f',
     fontSize: 16,
     fontFamily: 'Raleway_700Bold',
+  },
+  backButton: {
+    position: 'absolute',
+    top: 10,
+    left: 16,
+    zIndex: 10,
+    width: 40,
+    height: 40,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
 });
 
