@@ -181,15 +181,21 @@ export default function ActivityScreen() {
   }
 
   function handleReturn(id: string) {
-    // remove activity locally and in store
-    updateActivityItem(id, { activity: undefined });
-    setItems((prev) => prev.map((it) => it.id === id ? (() => { const copy = { ...it }; delete (copy as any).activity; return copy; })() : it));
+    const item = items.find(i => i.id === id);
+    if (item && item.activity) {
+      const updatedActivity = { ...item.activity, status: 'completed' as const };
+      updateActivityItem(id, { activity: updatedActivity });
+      setItems((prev) => prev.map((it) => it.id === id ? { ...it, activity: updatedActivity } : it));
+    }
   }
 
   function handleMarkReturned(id: string) {
-    // Called by owner when marking a lent item as returned: clear its activity
-    updateActivityItem(id, { activity: undefined });
-    setItems((prev) => prev.map((it) => it.id === id ? (() => { const copy = { ...it }; delete (copy as any).activity; return copy; })() : it));
+    const item = items.find(i => i.id === id);
+    if (item && item.activity) {
+      const updatedActivity = { ...item.activity, status: 'completed' as const };
+      updateActivityItem(id, { activity: updatedActivity });
+      setItems((prev) => prev.map((it) => it.id === id ? { ...it, activity: updatedActivity } : it));
+    }
   }
 
   function handleCancelRequest(id: string) {

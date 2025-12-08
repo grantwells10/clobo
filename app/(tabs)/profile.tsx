@@ -59,10 +59,10 @@ export default function ProfileScreen() {
   const updateListingsAndStats = useCallback(() => {
     const activitiesData = getActivityItems();
     const lendsCount = activitiesData.filter(
-      (a) => a.owner?.name === 'You' && a.activity?.role === 'lending' && a.activity?.status === 'current'
+      (a) => a.owner?.name === 'You' && a.activity?.role === 'lending' && (a.activity?.status === 'current' || a.activity?.status === 'completed')
     ).length;
     const borrowsCount = activitiesData.filter(
-      (a) => a.activity?.role === 'borrowed' && a.activity?.status === 'current'
+      (a) => a.activity?.role === 'borrowed' && (a.activity?.status === 'current' || a.activity?.status === 'completed')
     ).length;
     const lentListingIds = new Set(
       activitiesData
@@ -77,8 +77,8 @@ export default function ProfileScreen() {
     
     setStats(prev => ({
       ...prev,
-      lends: lendsCount,
-      borrows: borrowsCount,
+      lends: profileData.stats.lends + lendsCount,
+      borrows: profileData.stats.borrows + borrowsCount,
     }));
   }, []);
 
