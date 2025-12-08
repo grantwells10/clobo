@@ -15,7 +15,7 @@
     "description": "Beautiful midi dress perfect for summer outings. Features a flattering fit and flare silhouette with adjustable straps. Worn once to a wedding, excellent condition.",
     "washingInstructions": "Machine wash cold on gentle cycle. Tumble dry low or hang to dry. Iron on low heat if needed.",
     "owner": { "name": "Sarah Kim", "avatarUrl": "https://i.pravatar.cc/100?img=12", "mutualFriends": 3 },
-    "activity": { "role": "borrowed", "direction": "from", "person": { "name": "Sarah Kim", "avatarUrl": "https://i.pravatar.cc/100?img=12" }, "status": "current", "dueDate": "2025-10-30" }
+    "activity": { "role": "borrowed", "direction": "from", "person": { "name": "Sarah Kim", "avatarUrl": "https://i.pravatar.cc/100?img=12" }, "status": "current", "dueDate": "2025-12-20" }
   },
   {
     "id": "vintage-knit-sweater",
@@ -33,7 +33,7 @@
     "description": "Cozy cable-knit sweater in soft wool.",
     "washingInstructions": "Hand wash cold, lay flat to dry.",
     "owner": { "name": "You" },
-    "activity": { "role": "requested", "direction": "from", "person": { "name": "James Liu", "avatarUrl": "https://i.pravatar.cc/100?img=10" }, "status": "requested", "requestedDate": "2025-10-20" }
+    "activity": { "role": "requested", "direction": "from", "person": { "name": "James Liu", "avatarUrl": "https://i.pravatar.cc/100?img=10" }, "status": "requested", "requestedDate": "2025-12-12" }
   },
   {
     "id": "mango-silk-blouse",
@@ -51,7 +51,7 @@
     "description": "Silky blouse with subtle sheen and relaxed drape.",
     "washingInstructions": "Dry clean recommended.",
     "owner": { "name": "You" },
-    "activity": { "role": "lending", "direction": "to", "person": { "name": "Emma Rod", "avatarUrl": "https://i.pravatar.cc/100?img=68" }, "status": "current", "dueDate": "2025-11-05" }
+    "activity": { "role": "lending", "direction": "to", "person": { "name": "Emma Rod", "avatarUrl": "https://i.pravatar.cc/100?img=68" }, "status": "current", "dueDate": "2025-12-20" }
   },
   {
     "id": "floral-day-dress",
@@ -69,25 +69,7 @@
     "description": "Lightweight floral dress perfect for daytime events.",
     "washingInstructions": "Machine wash cold, delicate cycle.",
     "owner": { "name": "Chloe Nguyen", "avatarUrl": "https://i.pravatar.cc/100?img=14", "mutualFriends": 1 },
-    "activity": { "role": "borrowed", "direction": "from", "person": { "name": "Emma Rod", "avatarUrl": "https://i.pravatar.cc/100?img=68" }, "status": "current", "dueDate": "2025-11-02" }
-  },
-  {
-    "id": "puffer-jacket",
-    "brand": "Mango",
-    "title": "Puffer Jacket",
-    "category": "Outerwear",
-    "material": "Polyester",
-    "color": "Beige",
-    "occasion": "Outdoor",
-    "sizes": ["S", "M", "L"],
-    "distanceKm": 8.6,
-    "popularityScore": 55,
-    "imageUrl": "https://www.mangooutlet.com/assets/rcs/pics/static/T5/fotos/S/57074395_PL.jpg?imwidth=2048&imdensity=1&ts=1691141782831",
-    "sizeLabel": "Large",
-    "description": "Warm puffer jacket with hood and side pockets.",
-    "washingInstructions": "Machine wash cold, gentle cycle. Tumble dry low with tennis balls.",
-    "owner": { "name": "Ben Carter", "avatarUrl": "https://i.pravatar.cc/100?img=28", "mutualFriends": 2 },
-    "activity": { "role": "requested", "direction": "from", "person": { "name": "James Liu", "avatarUrl": "https://i.pravatar.cc/100?img=10" }, "status": "requested", "requestedDate": "2025-10-18" }
+    "activity": { "role": "borrowed", "direction": "from", "person": { "name": "Emma Rod", "avatarUrl": "https://i.pravatar.cc/100?img=68" }, "status": "current", "dueDate": "2025-12-09" }
   },
   {
     "id": "puffer-jacket-hooded",
@@ -105,6 +87,6 @@
     "description": "Warm puffer jacket with hood and side pockets.",
     "washingInstructions": "Machine wash cold, gentle cycle. Tumble dry low with tennis balls.",
     "owner": { "name": "You" },
-    "activity": { "role": "lending", "direction": "to", "person": { "name": "James Liu", "avatarUrl": "https://i.pravatar.cc/100?img=10" }, "status": "current", "dueDate": "2025-11-18" }
+    "activity": { "role": "lending", "direction": "to", "person": { "name": "James Liu", "avatarUrl": "https://i.pravatar.cc/100?img=10" }, "status": "current", "dueDate": "2025-12-18" }
   }
 ]

@@ -99,21 +99,9 @@ export default function ProductDetail() {
     }
   };
   
-  // Use user listing data if it's their own, otherwise use product data
-  const item = isOwn && userListing ? {
-    id: userListing.id,
-    title: userListing.title || userListing.alt,
-    brand: userListing.brand || '',
-    imageUrl: typeof userListing.imageUrl === 'object' && 'uri' in userListing.imageUrl ? userListing.imageUrl.uri : '',
-    sizeLabel: userListing.sizeLabel,
-    material: userListing.material,
-    color: userListing.color,
-    occasion: userListing.occasion,
-    description: userListing.description,
-    washingInstructions: userListing.washingInstructions,
-    sizes: userListing.sizeLabel ? [userListing.sizeLabel] : undefined,
-  } : product;
+  const item = product
 
+  console.log(item);
   const [modalVisible, setModalVisible] = useState(false);
   const [contactingOwner, setContactingOwner] = useState<{
     name: string;
