@@ -1,20 +1,19 @@
 import { useRouter } from 'expo-router';
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Alert, FlatList, Image, Linking, Modal, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import usersStore from '../data/usersStore';
 
 // hide the default header provided by the router for this screen
 export const options = {
   headerShown: false,
 };
 
-const rawUsers = require('../data/users.json');
-
-type User = typeof rawUsers[number];
+type User = any;
 
 export default function FriendsScreen() {
   const router = useRouter();
-  const [users, setUsers] = useState<User[]>(rawUsers);
+  const [users, setUsers] = useState<User[]>(usersStore.getUsers());
   const [phone, setPhone] = useState('');
   const [notFound, setNotFound] = useState(false);
   const [selected, setSelected] = useState<User | null>(null);
@@ -50,9 +49,8 @@ export default function FriendsScreen() {
   }
 
   function addFriend(id: string) {
-    setUsers((prev) => prev.map((u) => u.id === id ? { ...u, isFriend: true } : u));
+    usersStore.addFriendById(id);
     setSelected((s: User | null) => s && s.id === id ? { ...s, isFriend: true } : s);
-    setNotFound(false);
   }
 
   function contactFriend(phone: string, method: 'imessage' | 'sms' | 'whatsapp') {
@@ -91,6 +89,11 @@ export default function FriendsScreen() {
     setModalVisible(false);
   }
 
+  // subscribe to store updates
+  useEffect(() => {
+    const unsub = usersStore.subscribe(() => setUsers(usersStore.getUsers()));
+    return unsub;
+  }, []);
 
   return (
     <SafeAreaView style={styles.container} edges={["top"]}>
@@ -145,10 +148,10 @@ export default function FriendsScreen() {
       ) : null}
 
       {notFound && !selected ? (
-        <Text style={styles.notFoundText}>No user found for that phone number</Text>
+        <Text style={styles.notFoundText}>No user found.</Text>
       ) : null}
 
-      <Text style={styles.sub}>Your Friends</Text>
+      <Text style={styles.sub}>My Friends</Text>
       <FlatList
         data={friends}
         keyExtractor={(i) => i.id}
@@ -221,7 +224,7 @@ const styles = StyleSheet.create({
   actionDisabledText: { color: '#999', fontWeight: '700' },
   sub: { fontWeight: '700', marginTop: 10, marginBottom: 8, color: '#666' },
   friendRow: { flexDirection: 'row', alignItems: 'center', paddingVertical: 8, borderBottomWidth: 1, borderBottomColor: '#f4f4f4' },
-  notFoundText: { color: 'red', fontWeight: '700', textAlign: 'center', marginTop: 12 },
+  notFoundText: { color: 'gray', fontWeight: '700', textAlign: 'center', marginTop: 12 },
   modalContainer: {
     flex: 1,
     justifyContent: 'flex-end',

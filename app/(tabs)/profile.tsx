@@ -1,6 +1,7 @@
 import { ProfilePage } from '@/components/ProfileComponents/ProfilePage';
 import { getActivityItems } from '@/data/activityStore';
 import { setUserListings } from '@/data/userListings';
+import usersStore from '@/data/usersStore';
 import { globalStyles } from '@/styles/globalStyles';
 import type { Listing, Profile } from '@/types/profile';
 import { Raleway_500Medium, Raleway_700Bold, useFonts } from '@expo-google-fonts/raleway';
@@ -86,6 +87,7 @@ export default function ProfileScreen() {
     items: itemsCount,
     lends: 0,
     borrows: 0,
+    friends: 0,
   });
 
   // Initial load
@@ -103,6 +105,19 @@ export default function ProfileScreen() {
   useEffect(() => {
     setUserListings(listings);
   }, [listings]);
+
+  // subscribe to users to update friends count
+  useEffect(() => {
+    const unsub = usersStore.subscribe(() => {
+      const all = usersStore.getUsers();
+      const friendCount = all.filter((u: any) => u.isFriend).length;
+      setStats(prev => ({ ...prev, friends: friendCount }));
+    });
+    // initialize
+    const all = usersStore.getUsers();
+    setStats(prev => ({ ...prev, friends: all.filter((u: any) => u.isFriend).length }));
+    return unsub;
+  }, []);
 
   if (!loaded) return null;
 
