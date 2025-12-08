@@ -323,19 +323,17 @@ function ActivityCard({ item, type, onApprove, onDeny, onReturn, onReturned, onC
   }
 
   if (type === 'approveRequest') {
-    const isOwn = item.owner?.name === 'You';
+    const requesterName = item.activity?.person?.name ?? 'Grant Wells';
     return (
       <Pressable style={styles.card} onPress={handlePress}>
         <Image source={{ uri: item.imageUrl }} style={styles.thumb} resizeMode="cover" />
         <View style={styles.cardBody}>
           <Text style={styles.brand}>{item.brand}</Text>
           <Text style={styles.title}>{item.title}</Text>
-          {!isOwn && (
-            <View style={styles.ownerRow}>
-              {/* <Image source={{ uri: item.activity?.person?.avatarUrl || item.owner?.avatarUrl }} style={styles.avatar} /> */}
-              <Text style={styles.ownerText}>{item.activity?.person?.name}</Text>
-            </View>
-          )}
+          <View style={styles.ownerRow}>
+            {/* show requester name for approve cards */}
+            <Text style={styles.ownerText}>{`From ${requesterName}`}</Text>
+          </View>
         </View>
         <View style={styles.approveActions}>
           <TouchableOpacity style={[styles.actionBtn, styles.actionGoldOutline, styles.approveActionBtn]} onPress={(e) => { e.stopPropagation(); onApprove && onApprove(item.id); }}>
