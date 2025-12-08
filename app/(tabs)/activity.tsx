@@ -5,14 +5,53 @@ import { Raleway_500Medium, useFonts } from '@expo-google-fonts/raleway';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { useFocusEffect } from '@react-navigation/native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import { Calendar, X } from 'lucide-react-native';
+import { Calendar, MessageCircle, X } from 'lucide-react-native';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { Alert, Image, Modal, Platform, Pressable, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { Alert, Image, Linking, Modal, Platform, Pressable, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 const rawActivity = require('../../data/activity.json');
 
+  const users = require('../../data/users.json');
+
 type ActivityItem = typeof rawActivity[number];
+
+  function contactPerson(phone: string | undefined, method: 'imessage' | 'sms' | 'whatsapp') {
+    if (!phone) {
+      Alert.alert('Error', 'No phone number available for this user.');
+      return;
+    }
+    const digits = phone.replace(/\D/g, '');
+    let url = '';
+    if (method === 'imessage' || method === 'sms') {
+      url = `sms:${digits}`; // Will use iMessage if available
+    } else if (method === 'whatsapp') {
+      url = `whatsapp://send?phone=1${digits}`; // USA code; change for other regions
+    }
+    Linking.canOpenURL(url)
+      .then(supported => supported
+        ? Linking.openURL(url)
+        : Alert.alert(method === 'whatsapp' ? 'WhatsApp not installed' : 'Messages app not found')
+      )
+      .catch(() => Alert.alert('Error', 'Unable to contact person.'));
+  }
+
+  function showContactOptions(name: string, phone: string | undefined) {
+    if (!phone) {
+      Alert.alert('Error', `No phone number available for ${name}.`);
+      return;
+    }
+    
+    Alert.alert(
+      `Contact ${name}`,
+      `Choose a method to contact ${name}`,
+      [
+        { text: 'Cancel', style: 'cancel' },
+        { text: 'Message (iMessage/SMS)', onPress: () => contactPerson(phone, 'imessage') },
+        { text: 'WhatsApp', onPress: () => contactPerson(phone, 'whatsapp') },
+      ]
+    );
+  }
 
 export default function ActivityScreen() {
   const { initialTab } = useLocalSearchParams<{ initialTab?: string }>();
@@ -278,6 +317,11 @@ function ActivityCard({ item, type, onApprove, onDeny, onReturn, onReturned, onC
   const router = useRouter();
   const personName = item.activity?.person?.name ?? item.owner?.name;
   // const avatar = item.activity?.person?.avatarUrl ?? item.owner?.avatarUrl;
+  
+  // Find user data to get phone number
+  const users = require('../../data/users.json');
+  const personUser = users.find((u: any) => u.name === personName);
+  const personPhone = personUser?.phone;
 
   const handlePress = () => {
     const params: { id: string; isBorrowing?: string; isOwnListing?: string } = { id: item.id };
@@ -324,15 +368,29 @@ function ActivityCard({ item, type, onApprove, onDeny, onReturn, onReturned, onC
 
   if (type === 'approveRequest') {
     const requesterName = item.activity?.person?.name ?? 'Grant Wells';
+    // Find requester data to get phone number
+    const requesterUser = users.find((u: any) => u.name === requesterName);
+    const requesterPhone = requesterUser?.phone;
+    
     return (
       <Pressable style={styles.card} onPress={handlePress}>
         <Image source={{ uri: item.imageUrl }} style={styles.thumb} resizeMode="cover" />
         <View style={styles.cardBody}>
           <Text style={styles.brand}>{item.brand}</Text>
           <Text style={styles.title}>{item.title}</Text>
-          <View style={styles.ownerRow}>
-            {/* show requester name for approve cards */}
-            <Text style={styles.ownerText}>{`From ${requesterName}`}</Text>
+          <View style={[styles.ownerRow, { justifyContent: 'space-between', paddingRight: 8 }]}>
+            <View style={{ flex: 1 }}>
+              <Text style={styles.ownerText}>{`From ${requesterName}`}</Text>
+            </View>
+            <TouchableOpacity 
+              style={styles.contactIconBtn} 
+              onPress={(e) => { 
+                e.stopPropagation(); 
+                showContactOptions(requesterName, requesterPhone); 
+              }}
+            >
+              <MessageCircle size={20} color={Colors.textMuted} />
+            </TouchableOpacity>
           </View>
         </View>
         <View style={styles.approveActions}>
@@ -606,6 +664,10 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
 
+  contactIconBtn: {
+    padding: 4,
+    marginLeft: 8,
+  },
   approveActions: { flexDirection: 'column', alignItems: 'flex-end' },
   approveActionBtn: { marginLeft: 0, marginTop: 8, width: 96, alignItems: 'center', justifyContent: 'center' },
   pill: globalStyles.pill,

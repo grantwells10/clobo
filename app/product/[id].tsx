@@ -3,10 +3,10 @@ import { getUserListing, removeUserListing } from '@/data/userListings';
 import { addUserRequest, getUserRequests, removeUserRequest } from '@/data/userRequests';
 import type { Product } from '@/types/product';
 import { Raleway_500Medium, Raleway_700Bold, useFonts } from '@expo-google-fonts/raleway';
-import { FontAwesome } from '@expo/vector-icons';
 import { useFocusEffect } from '@react-navigation/native';
 import { Image } from 'expo-image';
 import { useLocalSearchParams, useRouter } from 'expo-router';
+import { MessageCircle } from 'lucide-react-native';
 import React, { useCallback, useEffect, useState } from 'react';
 import { Alert, Linking, Modal, Pressable, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -118,15 +118,7 @@ export default function ProductDetail() {
     ? userListing.imageUrl  // Already converted in profile.tsx - either number (require()) or { uri: string }
     : (item?.imageUrl ? { uri: item.imageUrl } : null);
 
-  const [modalVisible, setModalVisible] = useState(false);
-  const [contactingOwner, setContactingOwner] = useState<{
-    name: string;
-    phone: string;
-  } | null>(null);
-  const [contactingBorrower, setContactingBorrower] = useState<{
-    name: string;
-    phone: string;
-  } | null>(null);
+  const [modalVisible, setModalVisible] = useState(false); // Kept for other modals if needed
 
   function contactPerson(phone: string, method: 'imessage' | 'sms' | 'whatsapp') {
     const digits = phone.replace(/\D/g, '');
@@ -144,22 +136,21 @@ export default function ProductDetail() {
       .catch(() => Alert.alert('Error', 'Unable to contact person.'));
   }
 
-  function showContactModal(owner: { name: string, phone: string }) {
-    setContactingOwner(owner);
-    setContactingBorrower(null);
-    setModalVisible(true);
-  }
-  
-  function showBorrowerContactModal(borrower: { name: string, phone: string }) {
-    setContactingBorrower(borrower);
-    setContactingOwner(null);
-    setModalVisible(true);
-  }
-  
-  function closeContactModal() {
-    setModalVisible(false);
-    setContactingOwner(null);
-    setContactingBorrower(null);
+  function showContactOptions(name: string, phone: string | undefined) {
+    if (!phone) {
+      Alert.alert('Error', `No phone number available for ${name}.`);
+      return;
+    }
+    
+    Alert.alert(
+      `Contact ${name}`,
+      `Choose a method to contact ${name}`,
+      [
+        { text: 'Cancel', style: 'cancel' },
+        { text: 'Message (iMessage/SMS)', onPress: () => contactPerson(phone, 'imessage') },
+        { text: 'WhatsApp', onPress: () => contactPerson(phone, 'whatsapp') },
+      ]
+    );
   }
 
   const handleDeleteListing = () => {
@@ -259,10 +250,10 @@ export default function ProductDetail() {
                 <TouchableOpacity
                   style={styles.iconButton}
                   onPress={() =>
-                    showContactModal({ name: product.owner!.name, phone: product.owner!.phone! })
+                    showContactOptions(product.owner!.name, product.owner!.phone!)
                   }
                 >
-                  <FontAwesome name="comment" size={24} color="#555" />
+                  <MessageCircle size={24} color="#555" />
                 </TouchableOpacity>
               ) : null}
             </View>
@@ -308,10 +299,10 @@ export default function ProductDetail() {
                 <TouchableOpacity
                   style={styles.iconButton}
                   onPress={() =>
-                    showBorrowerContactModal({ name: borrower.name, phone: borrowerPhone })
+                    showContactOptions(borrower.name, borrowerPhone)
                   }
                 >
-                  <FontAwesome name="comment" size={24} color="#555" />
+                  <MessageCircle size={24} color="#555" />
                 </TouchableOpacity>
               ) : null}
             </View>
@@ -327,45 +318,10 @@ export default function ProductDetail() {
         )}
 
         <Modal
-          visible={modalVisible}
+          visible={false} // Modal logic removed in favor of Alert
           transparent
           animationType="slide"
-          onRequestClose={closeContactModal}
         >
-          <View style={styles.modalContainer}>
-            <View style={styles.modalSheet}>
-              {contactingOwner && (
-                <>
-                  <Text style={[styles.ownerName, { fontSize: 18, marginBottom: 6 }]}>Contact {contactingOwner.name}</Text>
-                  <Text style={styles.muted}>{contactingOwner.phone}</Text>
-                  <TouchableOpacity style={styles.modalBtn} onPress={() => { contactPerson(contactingOwner.phone, 'imessage'); closeContactModal(); }}>
-                    <Text style={styles.modalBtnText}>Message (iMessage/SMS)</Text>
-                  </TouchableOpacity>
-                  <TouchableOpacity style={styles.modalBtn} onPress={() => { contactPerson(contactingOwner.phone, 'whatsapp'); closeContactModal(); }}>
-                    <Text style={styles.modalBtnText}>WhatsApp</Text>
-                  </TouchableOpacity>
-                  <TouchableOpacity style={styles.modalBtn} onPress={closeContactModal}>
-                    <Text style={[styles.modalBtnText, { color: 'red' }]}>Cancel</Text>
-                  </TouchableOpacity>
-                </>
-              )}
-              {contactingBorrower && (
-                <>
-                  <Text style={[styles.ownerName, { fontSize: 18, marginBottom: 6 }]}>Contact {contactingBorrower.name}</Text>
-                  <Text style={styles.muted}>{contactingBorrower.phone}</Text>
-                  <TouchableOpacity style={styles.modalBtn} onPress={() => { contactPerson(contactingBorrower.phone, 'imessage'); closeContactModal(); }}>
-                    <Text style={styles.modalBtnText}>Message (iMessage/SMS)</Text>
-                  </TouchableOpacity>
-                  <TouchableOpacity style={styles.modalBtn} onPress={() => { contactPerson(contactingBorrower.phone, 'whatsapp'); closeContactModal(); }}>
-                    <Text style={styles.modalBtnText}>WhatsApp</Text>
-                  </TouchableOpacity>
-                  <TouchableOpacity style={styles.modalBtn} onPress={closeContactModal}>
-                    <Text style={[styles.modalBtnText, { color: 'red' }]}>Cancel</Text>
-                  </TouchableOpacity>
-                </>
-              )}
-            </View>
-          </View>
         </Modal>
       </ScrollView>
     </SafeAreaView>
@@ -473,8 +429,6 @@ const styles = StyleSheet.create({
   iconButton: {
     padding: 8,
     marginLeft: 8,
-    borderRadius: 20,
-    backgroundColor: '#ececec',
     alignItems: 'center',
     justifyContent: 'center',
   },
