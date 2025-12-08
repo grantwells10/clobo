@@ -31,3 +31,7 @@ If you encounter missing module errors:
     npx expo install
 
 No backend setup or API keys are required.
+
+### AI Attribution
+
+Our team utilized Cursor with ChatGPT to generate starter code and mock data for all of the screens, which we fine tuned to meet our specific needs.
