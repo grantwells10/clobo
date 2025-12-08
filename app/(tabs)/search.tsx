@@ -8,7 +8,7 @@ import { Image } from 'expo-image';
 import { useRouter } from 'expo-router';
 import { Check, ChevronDown, Search as SearchIcon } from 'lucide-react-native';
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { Dimensions, FlatList, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
+import { Dimensions, FlatList, Keyboard, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 const productsData = require('@/data/products.json') as Product[];
@@ -113,6 +113,11 @@ export default function SearchScreen() {
             setSortOption={setSortOption}
             sortOpen={sortOpen}
             setSortOpen={setSortOpen}
+            isSearching={!!query}
+            onClearSearch={() => {
+              setQuery('');
+              Keyboard.dismiss();
+            }}
           />
         }
         ListEmptyComponent={<EmptyResults query={query} />}
@@ -126,7 +131,7 @@ export default function SearchScreen() {
 }
 
 function SearchHeader(
-  { query, setQuery, activeChip, setActiveChip, filters, setFilters, options, sortOption, setSortOption, sortOpen, setSortOpen }: {
+  { query, setQuery, activeChip, setActiveChip, filters, setFilters, options, sortOption, setSortOption, sortOpen, setSortOpen, isSearching, onClearSearch }: {
     query: string;
     setQuery: (q: string) => void;
     activeChip: null | 'size' | 'material' | 'color' | 'occasion';
@@ -138,6 +143,8 @@ function SearchHeader(
     setSortOption: (s: 'popularity' | 'distance') => void;
     sortOpen: boolean;
     setSortOpen: (b: boolean) => void;
+    isSearching: boolean;
+    onClearSearch?: () => void;
   }
 ) {
   const sortLabel = sortOption === 'popularity' ? 'Popularity' : 'Distance';
@@ -146,6 +153,11 @@ function SearchHeader(
       {sortOpen && <Pressable style={styles.headerOverlay} onPress={() => setSortOpen(false)} />}
 
       <View style={styles.searchRow}>
+        {isSearching && (
+          <Pressable onPress={onClearSearch} style={styles.backButton}>
+            <Text style={styles.backButtonText}>{'‹'}</Text>
+          </Pressable>
+        )}
         <View style={styles.searchField}>
           <SearchIcon color="#11181C" size={18} />
           <TextInput
@@ -432,6 +444,18 @@ const styles = StyleSheet.create({
   title: {
     color: Colors.text,
     fontFamily: 'Raleway_500Medium',
+  },
+  backButton: {
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginRight: 8,
+  },
+  backButtonText: {
+    fontSize: 20,
+    color: Colors.text,
   },
 });
 
