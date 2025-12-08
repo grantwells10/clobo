@@ -99,9 +99,25 @@ export default function ProductDetail() {
     }
   };
   
-  const item = product
+  const item = isOwn && userListing ? {
+    id: userListing.id,
+    title: userListing.title || userListing.alt,
+    brand: userListing.brand || '',
+    imageUrl: typeof userListing.imageUrl === 'object' && 'uri' in userListing.imageUrl ? userListing.imageUrl.uri : '',
+    sizeLabel: userListing.sizeLabel,
+    material: userListing.material,
+    color: userListing.color,
+    occasion: userListing.occasion,
+    description: userListing.description,
+    washingInstructions: userListing.washingInstructions,
+    sizes: userListing.sizeLabel ? [userListing.sizeLabel] : undefined,
+  } : product;
 
-  console.log(item);
+  // Handle image source - user listings are already converted (number or { uri }), products are string URLs
+  const imageSource = isOwn && userListing 
+    ? userListing.imageUrl  // Already converted in profile.tsx - either number (require()) or { uri: string }
+    : (item?.imageUrl ? { uri: item.imageUrl } : null);
+
   const [modalVisible, setModalVisible] = useState(false);
   const [contactingOwner, setContactingOwner] = useState<{
     name: string;
@@ -187,11 +203,6 @@ export default function ProductDetail() {
       </SafeAreaView>
     );
   }
-
-  // Handle image source - user listings are already converted (number or { uri }), products are string URLs
-  const imageSource = isOwn && userListing 
-    ? userListing.imageUrl  // Already converted in profile.tsx - either number (require()) or { uri: string }
-    : (item?.imageUrl ? { uri: item.imageUrl } : null);
 
   return (
     <SafeAreaView style={styles.safe}> 
