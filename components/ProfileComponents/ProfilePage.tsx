@@ -420,7 +420,7 @@ const Stat: FC<{ label: string; value: number }> = ({ label, value }) => (
 );
 
 const StatsRow: FC<{ stats: ProfileStats; onFriendsPress?: () => void }> = ({ stats, onFriendsPress }) => {
-  const entries = Object.entries(stats).filter(([key]) => key !== 'friends');
+  const entries = Object.entries(stats).filter(([key]) => key !== 'friends' && key !== 'items');
   return (
     <View style={globalStyles.statsRow}>
       {entries.map(([key, value]) => (
