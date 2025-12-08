@@ -1,3 +1,4 @@
+import { getActivityItems } from '@/data/activityStore';
 import { getUserRequests } from '@/data/userRequests';
 import { Colors, globalStyles } from '@/styles/globalStyles';
 import type { Product } from '@/types/product';
@@ -6,7 +7,7 @@ import { useFocusEffect } from '@react-navigation/native';
 import { Image } from 'expo-image';
 import { useRouter } from 'expo-router';
 import { Check, ChevronDown, Search as SearchIcon } from 'lucide-react-native';
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Dimensions, FlatList, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
@@ -20,6 +21,7 @@ export default function SearchScreen() {
   const [sortOption, setSortOption] = useState<'popularity' | 'distance'>('popularity');
   const [sortOpen, setSortOpen] = useState(false);
   const [requestedIds, setRequestedIds] = useState<Set<string>>(new Set());
+  const [items, setItems] = useState(productsData as any[]);
 
   // Refresh requested IDs when screen comes into focus
   useFocusEffect(
@@ -29,6 +31,13 @@ export default function SearchScreen() {
       setRequestedIds(ids);
     }, [])
   );
+
+  useEffect(() => {
+    // exclude products that are currently borrowed/lent (locked)
+    const activities = getActivityItems();
+    const lockedIds = new Set(activities.filter((a: any) => a.activity?.status === 'current').map((a: any) => a.id));
+    setItems((productsData as any[]).filter((p: any) => !lockedIds.has(p.id)));
+  }, []);
 
   const contentPadding = 16;
   const gap = 12;
@@ -41,7 +50,7 @@ export default function SearchScreen() {
 
   const filteredData = useMemo(() => {
     const q = query.trim().toLowerCase();
-    return productsData.filter((p) => {
+    return items.filter((p) => {
       // Filter out products that have been requested
       if (requestedIds.has(p.id)) {
         return false;
@@ -59,7 +68,7 @@ export default function SearchScreen() {
       const matchOccasion = filters.occasion ? (p.occasion ?? '').toLowerCase() === filters.occasion.toLowerCase() : true;
       return matchQuery && matchSize && matchMaterial && matchColor && matchOccasion;
     });
-  }, [query, filters, requestedIds]);
+  }, [query, filters, requestedIds, items]);
 
   const sortedData = useMemo(() => {
     const copy = [...filteredData];

@@ -142,6 +142,14 @@ export default function ActivityScreen() {
   }
 
   function handleReturn(id: string) {
+    // remove activity locally and in store
+    updateActivityItem(id, { activity: undefined });
+    setItems((prev) => prev.map((it) => it.id === id ? (() => { const copy = { ...it }; delete (copy as any).activity; return copy; })() : it));
+  }
+
+  function handleMarkReturned(id: string) {
+    // Called by owner when marking a lent item as returned: clear its activity
+    updateActivityItem(id, { activity: undefined });
     setItems((prev) => prev.map((it) => it.id === id ? (() => { const copy = { ...it }; delete (copy as any).activity; return copy; })() : it));
   }
 
@@ -196,7 +204,7 @@ export default function ActivityScreen() {
               {currentLending.length === 0 ? <Empty text="No current lends" /> : (
                 <View>
                   {currentLending.map((item) => (
-                    <ActivityCard key={item.id} item={item} type="lend" />
+                    <ActivityCard key={item.id} item={item} type="lend" onReturned={handleMarkReturned} />
                   ))}
                 </View>
               )}
@@ -266,10 +274,10 @@ function Empty({ text }: { text: string }) {
   return <Text style={styles.emptyText}>{text}</Text>;
 }
 
-function ActivityCard({ item, type, onApprove, onDeny, onReturn, onCancelRequest, pendingDenyId }: { item: ActivityItem; type: 'borrow' | 'lend' | 'yourRequest' | 'approveRequest' ; onApprove?: (id: string) => void; onDeny?: (id: string) => void; onReturn?: (id: string) => void; onCancelRequest?: (id: string) => void; pendingDenyId?: string | null }) {
+function ActivityCard({ item, type, onApprove, onDeny, onReturn, onReturned, onCancelRequest, pendingDenyId }: { item: ActivityItem; type: 'borrow' | 'lend' | 'yourRequest' | 'approveRequest' ; onApprove?: (id: string) => void; onDeny?: (id: string) => void; onReturn?: (id: string) => void; onReturned?: (id: string) => void; onCancelRequest?: (id: string) => void; pendingDenyId?: string | null }) {
   const router = useRouter();
   const personName = item.activity?.person?.name ?? item.owner?.name;
-  const avatar = item.activity?.person?.avatarUrl ?? item.owner?.avatarUrl;
+  // const avatar = item.activity?.person?.avatarUrl ?? item.owner?.avatarUrl;
 
   const handlePress = () => {
     const params: { id: string; isBorrowing?: string; isOwnListing?: string } = { id: item.id };
@@ -293,7 +301,7 @@ function ActivityCard({ item, type, onApprove, onDeny, onReturn, onCancelRequest
             <Text style={styles.brand}>{item.brand}</Text>
             <Text style={styles.title}>{item.title}</Text>
             <View style={styles.ownerRow}>
-              <Image source={{ uri: avatar }} style={styles.avatar} />
+              {/* <Image source={{ uri: avatar }} style={styles.avatar} /> */}
               <Text style={styles.ownerText}>{`From ${ownerName}`}</Text>
             </View>
           </View>
@@ -324,7 +332,7 @@ function ActivityCard({ item, type, onApprove, onDeny, onReturn, onCancelRequest
           <Text style={styles.title}>{item.title}</Text>
           {!isOwn && (
             <View style={styles.ownerRow}>
-              <Image source={{ uri: item.activity?.person?.avatarUrl || item.owner?.avatarUrl }} style={styles.avatar} />
+              {/* <Image source={{ uri: item.activity?.person?.avatarUrl || item.owner?.avatarUrl }} style={styles.avatar} /> */}
               <Text style={styles.ownerText}>{item.activity?.person?.name}</Text>
             </View>
           )}
@@ -351,7 +359,10 @@ function ActivityCard({ item, type, onApprove, onDeny, onReturn, onCancelRequest
   }
 
   const actionLabel = type === 'borrow' ? 'Return' : type === 'lend' ? 'Receive' : 'View';
-  const showButton = type === 'borrow';
+  // remove Return button for borrow cards (no button shown)
+  const showButton = false;
+  
+  const showReturnedButton = type === 'lend';
 
   return (
     <Pressable style={styles.card} onPress={handlePress}>
@@ -360,7 +371,7 @@ function ActivityCard({ item, type, onApprove, onDeny, onReturn, onCancelRequest
         <Text style={styles.brand}>{item.brand}</Text>
         <Text style={styles.title}>{item.title}</Text>
         <View style={styles.ownerRow}>
-          <Image source={{ uri: avatar }} style={styles.avatar} />
+          {/* <Image source={{ uri: avatar }} style={styles.avatar} /> */}
           <Text style={styles.ownerText}>{type === 'borrow' ? `From ${personName}` : type === 'lend' ? `To ${personName}` : personName}</Text>
         </View>
         {item.activity?.dueDate ? <Text style={styles.due}>{type === 'lend' ? 'Receive by:' : 'Return by:'} {formatDate(item.activity.dueDate)}</Text> : null}
@@ -368,6 +379,11 @@ function ActivityCard({ item, type, onApprove, onDeny, onReturn, onCancelRequest
       {showButton ? (
         <TouchableOpacity style={[styles.actionBtn, styles.actionGoldOutline]} onPress={(e) => { e.stopPropagation(); onReturn && onReturn(item.id); }}>
           <Text style={styles.actionTextGold}>{actionLabel}</Text>
+        </TouchableOpacity>
+      ) : null}
+      {showReturnedButton ? (
+        <TouchableOpacity style={[styles.actionBtn, styles.actionGoldOutline, styles.approveActionBtn]} onPress={(e) => { e.stopPropagation(); onReturned && onReturned(item.id); }}>
+          <Text style={styles.actionTextGold}>Returned</Text>
         </TouchableOpacity>
       ) : null}
     </Pressable>
@@ -552,7 +568,7 @@ const styles = StyleSheet.create({
     marginVertical: 4,
   },
   ownerRow: globalStyles.row,
-  avatar: globalStyles.avatarSmall,
+  // avatar: globalStyles.avatarSmall,
   ownerText: {
     color: Colors.textMuted,
   },
